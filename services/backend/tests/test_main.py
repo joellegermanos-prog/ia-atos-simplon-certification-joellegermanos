@@ -336,6 +336,61 @@ def test_feedback_is_idempotent_and_rejects_conflict():
     assert client.get("/feedback/count").json()["new"] == 1
 
 
+def test_feedback_triggers_retrainer_at_threshold(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+    monkeypatch.setenv("RETRAIN_MIN_FEEDBACK", "1")
+    monkeypatch.setenv("RETRAIN_API_TOKEN", "test-token")
+    monkeypatch.setattr(backend_main, "RETRAINER_URL", "http://retrainer:8002")
+    _register_prediction("req-trigger")
+    called = {}
+
+    async def fake_post(self, url, headers=None):
+        called["url"] = url
+        called["token"] = headers["X-Train-Token"]
+        return SimpleNamespace(status_code=202, json=lambda: {"status": "started"})
+
+    monkeypatch.setattr("httpx.AsyncClient.post", fake_post)
+    response = TestClient(app).post(
+        "/feedback",
+        json={"request_id": "req-trigger", "prediction": 1, "true_label": 2},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["retraining_status"] == "started"
+    assert called == {
+        "url": "http://retrainer:8002/retrain",
+        "token": "test-token",
+    }
+
+
+def test_feedback_is_saved_when_retrainer_is_unavailable(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+    monkeypatch.setenv("RETRAIN_MIN_FEEDBACK", "1")
+    monkeypatch.setenv("RETRAIN_API_TOKEN", "test-token")
+    _register_prediction("req-retrainer-unavailable")
+
+    async def fail_post(self, url, headers=None):
+        raise httpx.ConnectError(
+            "retrainer unavailable",
+            request=httpx.Request("POST", url),
+        )
+
+    monkeypatch.setattr("httpx.AsyncClient.post", fail_post)
+    client = TestClient(app)
+    response = client.post(
+        "/feedback",
+        json={
+            "request_id": "req-retrainer-unavailable",
+            "prediction": 1,
+            "true_label": 2,
+        },
+    )
+
+    assert response.status_code == 201
+    assert response.json()["retraining_status"] == "unavailable"
+    assert client.get("/feedback/count").json()["new"] == 1
+
+
 def test_evaluation_metrics_endpoint_serves_latest_gate(monkeypatch, tmp_path):
     metrics_path = tmp_path / "evaluation.prom"
     metrics_path.write_text("cisia_evaluation_gate_status 1\n", encoding="utf-8")

@@ -38,7 +38,9 @@ jobs:
       - name: Run backend API tests
         run: >-
           pytest -v services/backend/tests
-          -k "score_calls_model_and_returns_prediction or train_validates_minimum_records"
+          -k "score_calls_model_and_returns_prediction or train_validates_minimum_records or feedback_triggers_retrainer or feedback_is_saved_when_retrainer_is_unavailable"
+      - name: Run retrainer API tests
+        run: pytest -v services/retrainer/tests
 
   train-validation:
     needs: lint
@@ -176,9 +178,9 @@ jobs:
             set -eu
             cd "$DEPLOY_PATH"
             printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GHCR_USERNAME" --password-stdin
-            IMAGE_PREFIX="$IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" docker compose pull model backend frontend
-            IMAGE_PREFIX="$IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" docker compose up -d --no-build --force-recreate model backend frontend
-            docker compose ps model backend frontend
+            IMAGE_PREFIX="$IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" docker compose pull model backend frontend retrainer
+            IMAGE_PREFIX="$IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" docker compose up -d --no-build --force-recreate model backend frontend retrainer
+            docker compose ps model backend frontend retrainer
 
   notify-failure:
     needs:

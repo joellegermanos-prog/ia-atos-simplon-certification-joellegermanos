@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "tabulaire_seul",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-03T16:22:17.753389+00:00",
+  "created_at_utc": "2026-10-03T19:45:34.203188+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2605,8 +2605,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.8236231000046246,
-    "cpu_ms_1000_predictions": 66250.0,
+    "training_seconds": 2.1119709000049625,
+    "cpu_ms_1000_predictions": 139218.75,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2669,7 +2669,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_tabulaire_seul_balanced.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_tabulaire_seul_balanced.json",
-    "model_size_bytes": 5485054,
-    "model_size_mb": 5.230955
+    "model_size_bytes": 5485303,
+    "model_size_mb": 5.231193
   }
 }

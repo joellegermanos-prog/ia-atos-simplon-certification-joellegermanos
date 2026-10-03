@@ -59,6 +59,9 @@ services:
       ALLOWED_ORIGINS: "http://frontend,http://127.0.0.1:8088"
       FEEDBACK_DB: "/app/data/feedbacks.db"
       RETRAIN_METRICS_FILE: "/app/reports/retrain.prom"
+      RETRAINER_URL: "http://retrainer:8002"
+      RETRAIN_API_TOKEN: "${RETRAIN_API_TOKEN:-}"
+      RETRAIN_MIN_FEEDBACK: "${RETRAIN_MIN_FEEDBACK:-200}"
       EVALUATION_METRICS_FILE: "/app/reports/evaluation.prom"
       ABSTENTION_THRESHOLD: "${ABSTENTION_THRESHOLD:-0.55}"
       CLASS_2_ESCALATION_THRESHOLD: "${CLASS_2_ESCALATION_THRESHOLD:-0.04}"
@@ -69,6 +72,8 @@ services:
       - ./reports:/app/reports:ro
     depends_on:
       model:
+        condition: service_healthy
+      retrainer:
         condition: service_healthy
     healthcheck:
       test:
@@ -135,7 +140,6 @@ services:
       - prometheus
 
   retrainer:
-    profiles: ["retrain"]
     image: "${IMAGE_PREFIX:-cisia-emploi}/retrainer:${IMAGE_TAG:-latest}"
     build:
       context: .
@@ -145,12 +149,26 @@ services:
       DECISION_LOG: "/app/reports/decisions_log.jsonl"
       RETRAIN_RESULT_PATH: "/app/reports/retrain-result.json"
       RETRAIN_METRICS_PATH: "/app/reports/retrain.prom"
+      RETRAIN_API_TOKEN: "${RETRAIN_API_TOKEN:-}"
+      RETRAIN_MIN_FEEDBACK: "${RETRAIN_MIN_FEEDBACK:-200}"
       MLFLOW_TRACKING_URI: "${MLFLOW_TRACKING_URI:-http://mlflow:5000}"
     volumes:
       - feedback_data:/app/feedback-data
       - ./services/model/models:/app/services/model/models
       - ./reports:/app/reports
-    restart: "no"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8002/health').status==200 else 1)"
+        ]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
     depends_on:
       mlflow:
         condition: service_healthy

@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "tabulaire_seul",
   "config_name": "best_class_2_tab",
-  "created_at_utc": "2026-10-03T16:31:25.142959+00:00",
+  "created_at_utc": "2026-10-03T19:58:15.166065+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2615,8 +2615,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.1509209999931045,
-    "cpu_ms_1000_predictions": 5312.5,
+    "training_seconds": 0.16179559999727644,
+    "cpu_ms_1000_predictions": 6093.75,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2679,7 +2679,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_lightgbm_tabulaire_seul_best_class_2_tab.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_lightgbm_tabulaire_seul_best_class_2_tab.json",
-    "model_size_bytes": 295831,
-    "model_size_mb": 0.282126
+    "model_size_bytes": 295881,
+    "model_size_mb": 0.282174
   }
 }

@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "texte_seul",
   "config_name": "best_class_2_text",
-  "created_at_utc": "2026-10-03T16:31:23.389187+00:00",
+  "created_at_utc": "2026-10-03T19:58:13.256010+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2582,8 +2582,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.6029679999919608,
-    "cpu_ms_1000_predictions": 11406.25,
+    "training_seconds": 1.1807746999838855,
+    "cpu_ms_1000_predictions": 10781.25,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2646,7 +2646,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_texte_seul_best_class_2_text.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_texte_seul_best_class_2_text.json",
-    "model_size_bytes": 210597,
-    "model_size_mb": 0.200841
+    "model_size_bytes": 210684,
+    "model_size_mb": 0.200924
   }
 }

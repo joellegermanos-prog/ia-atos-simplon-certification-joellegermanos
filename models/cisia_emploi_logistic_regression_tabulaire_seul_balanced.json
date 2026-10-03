@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "tabulaire_seul",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-03T16:22:22.812863+00:00",
+  "created_at_utc": "2026-10-03T19:45:43.950002+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2605,8 +2605,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.06563950001145713,
-    "cpu_ms_1000_predictions": 5625.0,
+    "training_seconds": 0.10386949998792261,
+    "cpu_ms_1000_predictions": 11562.5,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2669,7 +2669,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_logistic_regression_tabulaire_seul_balanced.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_logistic_regression_tabulaire_seul_balanced.json",
-    "model_size_bytes": 5102,
-    "model_size_mb": 0.004866
+    "model_size_bytes": 5093,
+    "model_size_mb": 0.004857
   }
 }

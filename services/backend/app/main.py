@@ -38,6 +38,7 @@ from app.schemas import (
 
 # URL du service model — configurable par variable d'env (dev/staging/prod)
 MODEL_URL = os.environ.get("MODEL_URL", "http://model:8000")
+RETRAINER_URL = os.environ.get("RETRAINER_URL", "http://retrainer:8002")
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:8088").split(",")
 ABSTENTION_THRESHOLD = float(os.environ.get("ABSTENTION_THRESHOLD", "0.55"))
 CLASS_2_ESCALATION_THRESHOLD = float(
@@ -134,6 +135,50 @@ def _next_request_id() -> str:
         return request_id
 
 
+def _unconsumed_feedback_count() -> int:
+    _init_feedback_db()
+    with sqlite3.connect(_feedback_db_path()) as connection:
+        count = connection.execute(
+            "SELECT COUNT(*) FROM feedbacks WHERE used_for_training = 0"
+        ).fetchone()[0]
+    return int(count)
+
+
+async def _trigger_retraining_if_ready() -> str:
+    min_feedback = max(1, int(os.environ.get("RETRAIN_MIN_FEEDBACK", "200")))
+    if _unconsumed_feedback_count() < min_feedback:
+        return "below_threshold"
+
+    token = os.environ.get("RETRAIN_API_TOKEN", "")
+    if not token:
+        RETRAIN_TRIGGER_ERRORS_TOTAL.inc()
+        logger.warning("Feedback threshold reached but RETRAIN_API_TOKEN is not configured")
+        return "not_configured"
+
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            response = await client.post(
+                f"{RETRAINER_URL.rstrip('/')}/retrain",
+                headers={"X-Train-Token": token},
+            )
+    except httpx.RequestError:
+        RETRAIN_TRIGGER_ERRORS_TOTAL.inc()
+        logger.exception("Feedback saved, but retrainer could not be reached")
+        return "unavailable"
+
+    if response.status_code == status.HTTP_202_ACCEPTED:
+        try:
+            return str(response.json().get("status", "started"))
+        except ValueError:
+            return "started"
+    RETRAIN_TRIGGER_ERRORS_TOTAL.inc()
+    logger.warning(
+        "Feedback threshold reached, retrainer returned HTTP {status_code}",
+        status_code=response.status_code,
+    )
+    return "unavailable"
+
+
 _init_feedback_db()
 
 app = FastAPI(title="Retour-Emploi Backend Orchestrator", version="1.0.0")
@@ -177,6 +222,10 @@ BACKEND_PREDICTION_PROBA = Histogram(
     "backend_prediction_proba",
     "Distribution des probabilités de défaut renvoyées au client (dérive du comportement du modèle).",
     buckets=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
+)
+RETRAIN_TRIGGER_ERRORS_TOTAL = Counter(
+    "backend_retrain_trigger_errors_total",
+    "Nombre d'échecs lors du déclenchement du retrainer depuis un feedback.",
 )
 # Métriques HTTP automatiques + endpoint /metrics
 Instrumentator(should_group_status_codes=False).instrument(app).expose(
@@ -426,22 +475,30 @@ async def feedback(item: Feedback) -> dict[str, str]:
         ).fetchone()
         if existing_feedback is not None:
             if existing_feedback == (item.prediction, item.true_label):
-                return {"status": "already_registered", "request_id": item.request_id}
-            raise HTTPException(status_code=409, detail="Contradictory feedback")
+                result_status = "already_registered"
+            else:
+                raise HTTPException(status_code=409, detail="Contradictory feedback")
+        else:
+            connection.execute(
+                """INSERT INTO feedbacks
+                (request_id, prediction, true_label, comments, created_at)
+                VALUES (?, ?, ?, ?, ?)""",
+                (
+                    item.request_id,
+                    item.prediction,
+                    item.true_label,
+                    item.comments,
+                    datetime.now(timezone.utc).isoformat(),
+                ),
+            )
+            result_status = "stored"
 
-        connection.execute(
-            """INSERT INTO feedbacks
-            (request_id, prediction, true_label, comments, created_at)
-            VALUES (?, ?, ?, ?, ?)""",
-            (
-                item.request_id,
-                item.prediction,
-                item.true_label,
-                item.comments,
-                datetime.now(timezone.utc).isoformat(),
-            ),
-        )
-    return {"status": "stored", "request_id": item.request_id}
+    retraining_status = await _trigger_retraining_if_ready()
+    return {
+        "status": result_status,
+        "request_id": item.request_id,
+        "retraining_status": retraining_status,
+    }
 
 
 @app.get("/feedback/count")
