@@ -61,7 +61,7 @@ jobs:
       - name: Run model quality gate
         run: |
           set -o pipefail
-          python scripts/evaluate_model.py --release-tag "${{ github.ref_name }}" --degrade | tee evaluation-result.json
+          python scripts/evaluate_model.py --release-tag "${{ github.ref_name }}" | tee evaluation-result.json
       - name: Publish evaluation results in run summary
         if: always()
         run: |
