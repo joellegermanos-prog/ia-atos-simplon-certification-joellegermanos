@@ -1,0 +1,92 @@
+{
+  "status": "completed",
+  "evaluated_at_utc": "2026-10-03T16:31:45.835888+00:00",
+  "model_name": "cisia_emploi",
+  "model_type": "random_forest",
+  "scenario_name": "tabulaire_seul",
+  "config_name": "balanced",
+  "evaluation_dataset": {
+    "type": "holdout",
+    "rows": 500,
+    "indices_source": "metadata.dataset.test_indices",
+    "sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e"
+  },
+  "metrics": {
+    "latency_mean_ms": 55.37564299913356,
+    "latency_median_ms": 56.77994998404756,
+    "latency_p95_ms": 64.25047500088112,
+    "cpu_mean_ms": 56.5625,
+    "cpu_p95_ms": 93.75,
+    "cpu_ms_1000_predictions": 56562.5,
+    "latency_samples": 100,
+    "accuracy": 0.624,
+    "f1_macro": 0.6120143806636652,
+    "f1_weighted": 0.6205127505844766,
+    "f1_class_0": 0.7047146401985112,
+    "f1_class_1": 0.5763546798029556,
+    "f1_class_2": 0.5549738219895288,
+    "recall_classe_2": 0.5888888888888889,
+    "precision_classe_2": 0.5247524752475248,
+    "erreur_critique_2_vers_0": 10,
+    "erreur_critique_0_vers_2": 6,
+    "confusion_matrix": [
+      [
+        142,
+        39,
+        6
+      ],
+      [
+        64,
+        117,
+        42
+      ],
+      [
+        10,
+        27,
+        53
+      ]
+    ],
+    "classification_report": {
+      "Retour rapide": {
+        "precision": 0.6574074074074074,
+        "recall": 0.7593582887700535,
+        "f1-score": 0.7047146401985112,
+        "support": 187.0
+      },
+      "Retour moyen": {
+        "precision": 0.639344262295082,
+        "recall": 0.5246636771300448,
+        "f1-score": 0.5763546798029556,
+        "support": 223.0
+      },
+      "Risque longue durée": {
+        "precision": 0.5247524752475248,
+        "recall": 0.5888888888888889,
+        "f1-score": 0.5549738219895288,
+        "support": 90.0
+      },
+      "accuracy": 0.624,
+      "macro avg": {
+        "precision": 0.6071680483166714,
+        "recall": 0.6243036182629957,
+        "f1-score": 0.6120143806636652,
+        "support": 500.0
+      },
+      "weighted avg": {
+        "precision": 0.6254733568985313,
+        "recall": 0.624,
+        "f1-score": 0.6205127505844766,
+        "support": 500.0
+      }
+    },
+    "roc_auc_ovr_macro": 0.7657195329726948
+  },
+  "artifacts": {
+    "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_tabulaire_seul_balanced.joblib",
+    "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_tabulaire_seul_balanced.json",
+    "evaluation": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_random_forest_tabulaire_seul_balanced_evaluation.json",
+    "confusion_matrix": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_random_forest_tabulaire_seul_balanced_confusion_matrix.png",
+    "classification_report": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_random_forest_tabulaire_seul_balanced_classification_report.csv",
+    "predictions": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_random_forest_tabulaire_seul_balanced_predictions.csv"
+  }
+}

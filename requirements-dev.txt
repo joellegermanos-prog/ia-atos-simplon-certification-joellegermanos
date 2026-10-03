@@ -1,0 +1,8 @@
+# Dépendances pour les tests + l'évaluation continue (M5-B2)
+# Chaque service a son propre requirements.txt (services/*/requirements.txt).
+-r services/model/requirements.txt
+pytest==8.3.3
+httpx==0.28.1
+mlflow==2.17.2
+matplotlib==3.9.2
+seaborn==0.13.2

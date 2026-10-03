@@ -1,0 +1,92 @@
+{
+  "status": "completed",
+  "evaluated_at_utc": "2026-10-03T16:31:31.174844+00:00",
+  "model_name": "cisia_emploi",
+  "model_type": "xgboost",
+  "scenario_name": "multimodal_ethique",
+  "config_name": "best_class_2_ethique",
+  "evaluation_dataset": {
+    "type": "holdout",
+    "rows": 500,
+    "indices_source": "metadata.dataset.test_indices",
+    "sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e"
+  },
+  "metrics": {
+    "latency_mean_ms": 8.938481997465715,
+    "latency_median_ms": 8.38359999761451,
+    "latency_p95_ms": 13.986285000282805,
+    "cpu_mean_ms": 52.03125,
+    "cpu_p95_ms": 125.0,
+    "cpu_ms_1000_predictions": 52031.25,
+    "latency_samples": 100,
+    "accuracy": 0.664,
+    "f1_macro": 0.6455483000470972,
+    "f1_weighted": 0.6696216321075342,
+    "f1_class_0": 0.7028571428571428,
+    "f1_class_1": 0.6942528735632184,
+    "f1_class_2": 0.5395348837209303,
+    "recall_classe_2": 0.6444444444444445,
+    "precision_classe_2": 0.464,
+    "erreur_critique_2_vers_0": 7,
+    "erreur_critique_0_vers_2": 28,
+    "confusion_matrix": [
+      [
+        123,
+        36,
+        28
+      ],
+      [
+        33,
+        151,
+        39
+      ],
+      [
+        7,
+        25,
+        58
+      ]
+    ],
+    "classification_report": {
+      "Retour rapide": {
+        "precision": 0.754601226993865,
+        "recall": 0.6577540106951871,
+        "f1-score": 0.7028571428571428,
+        "support": 187.0
+      },
+      "Retour moyen": {
+        "precision": 0.7122641509433962,
+        "recall": 0.6771300448430493,
+        "f1-score": 0.6942528735632184,
+        "support": 223.0
+      },
+      "Risque longue durée": {
+        "precision": 0.464,
+        "recall": 0.6444444444444445,
+        "f1-score": 0.5395348837209303,
+        "support": 90.0
+      },
+      "accuracy": 0.664,
+      "macro avg": {
+        "precision": 0.6436217926457538,
+        "recall": 0.6597761666608936,
+        "f1-score": 0.6455483000470972,
+        "support": 500.0
+      },
+      "weighted avg": {
+        "precision": 0.6834106702164602,
+        "recall": 0.664,
+        "f1-score": 0.6696216321075342,
+        "support": 500.0
+      }
+    },
+    "roc_auc_ovr_macro": 0.8153350194642108
+  },
+  "artifacts": {
+    "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib",
+    "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.json",
+    "evaluation": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_evaluation.json",
+    "confusion_matrix": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_confusion_matrix.png",
+    "classification_report": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_classification_report.csv",
+    "predictions": "C:\\Users\\a895479\\projet\\certification\\reports\\cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_predictions.csv"
+  }
+}

@@ -1,0 +1,240 @@
+name: CI/CD - Retour-Emploi
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install lint tools
+        run: pip install ruff
+      - name: Run Ruff
+        run: ruff check services scripts tests
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        run: pip install -r services/model/requirements.txt -r services/backend/requirements.txt pytest httpx
+      - name: Run model API tests
+        run: >-
+          pytest -v services/model/tests
+          -k "health_ok or predict_valid_returns_class_and_proba or predict_negative_seniority_returns_422 or train_internal_error_returns_500 or metrics_endpoint_exposes_prometheus"
+      - name: Run backend API tests
+        run: >-
+          pytest -v services/backend/tests
+          -k "score_calls_model_and_returns_prediction or train_validates_minimum_records"
+
+  train-validation:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install training and evaluation dependencies
+        run: pip install -r services/model/requirements.txt -r requirements-dev.txt pytest
+      - name: Run training validation tests
+        run: >-
+          pytest -v services/model/tests
+          -k "train_requires_at_least_ten_records or train_rejects_invalid_token or train_returns_mlflow_run"
+      - name: Run model contract test
+        run: pytest -v services/model/tests/test_api.py -k test_model_contract_features_and_output
+      - name: Run evaluation tests
+        run: pytest -v tests/test_evaluation.py
+      - name: Run model quality gate
+        run: |
+          set -o pipefail
+          python scripts/evaluate_model.py --release-tag "${{ github.ref_name }}" | tee evaluation-result.json
+      - name: Publish evaluation results in run summary
+        if: always()
+        run: |
+          {
+            echo "## Model evaluation"
+            if [ -f evaluation-result.json ]; then
+              echo '```json'
+              cat evaluation-result.json
+              echo '```'
+            else
+              echo "Evaluation did not produce a result file."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build-and-push:
+    needs: [test, train-validation]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: model
+            context: ./services/model
+            file: ./services/model/Dockerfile
+          - service: backend
+            context: ./services/backend
+            file: ./services/backend/Dockerfile
+          - service: frontend
+            context: ./services/frontend
+            file: ./services/frontend/Dockerfile
+          - service: retrainer
+            context: .
+            file: ./services/retrainer/Dockerfile
+    name: build-and-push (${{ matrix.service }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Compute image name
+        id: image
+        run: |
+          REPO_LC=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+          echo "name=ghcr.io/${REPO_LC}/${{ matrix.service }}" >> "$GITHUB_OUTPUT"
+      - name: Log in to GHCR
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=sha
+            type=raw,value=${{ github.sha }}
+            type=ref,event=branch
+            type=ref,event=tag
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          push: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: build-and-push
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: certification-production-compose
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: read
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Deploy immutable images on target infrastructure
+        if: env.DEPLOY_HOST != ''
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+          IMAGE_TAG: ${{ github.sha }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ env.GHCR_TOKEN }}
+          DEPLOY_PATH: ${{ env.DEPLOY_PATH }}
+        with:
+          host: ${{ env.DEPLOY_HOST }}
+          username: ${{ env.DEPLOY_USER }}
+          key: ${{ env.DEPLOY_SSH_KEY }}
+          port: ${{ env.DEPLOY_PORT || 22 }}
+          envs: IMAGE_PREFIX,IMAGE_TAG,GHCR_USERNAME,GHCR_TOKEN,DEPLOY_PATH
+          script_stop: true
+          script: |
+            set -eu
+            cd "$DEPLOY_PATH"
+            printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GHCR_USERNAME" --password-stdin
+            IMAGE_PREFIX="$IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" docker compose pull model backend frontend
+            IMAGE_PREFIX="$IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" docker compose up -d --no-build --force-recreate model backend frontend
+            docker compose ps model backend frontend
+
+  notify-failure:
+    needs:
+      - lint
+      - test
+      - train-validation
+      - build-and-push
+      - deploy
+    if: >-
+      always() &&
+      (needs.lint.result == 'failure' ||
+        needs.test.result == 'failure' ||
+       needs.train-validation.result == 'failure' ||
+      needs.build-and-push.result == 'failure' ||
+      needs.deploy.result == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Discord secret
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "Missing GitHub secret DISCORD_WEBHOOK_URL"
+            exit 1
+          fi
+
+          case "$DISCORD_WEBHOOK_URL" in
+            https://discord.com/api/webhooks/*|https://discordapp.com/api/webhooks/*)
+              echo "Discord webhook URL detected"
+              ;;
+            *)
+              echo "Invalid Discord webhook URL. Expected something like https://discord.com/api/webhooks/..."
+              exit 1
+              ;;
+          esac
+
+      - name: Notify Discord on evaluation failure
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -sS -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            --data @- <<JSON
+          {
+            "username": "Model Gate",
+            "embeds": [
+              {
+                "title": "🚨 Release blocked by evaluation gate",
+                "description": "The model evaluation failed for this repository.",
+                "color": 15158332,
+                "fields": [
+                  { "name": "Repository", "value": "${{ github.repository }}", "inline": true },
+                  { "name": "Branch", "value": "${{ github.ref_name }}", "inline": true },
+                  { "name": "Run", "value": "[Open run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})", "inline": false }
+                ]
+              }
+            ]
+          }
+          JSON

@@ -1,0 +1,39 @@
+# HELP cisia_evaluation_gate_status 1 when the latest release gate passed
+# TYPE cisia_evaluation_gate_status gauge
+cisia_evaluation_gate_status 1
+# HELP cisia_evaluation_violations_total Number of failed release-gate checks
+# TYPE cisia_evaluation_violations_total gauge
+cisia_evaluation_violations_total 0
+# HELP cisia_evaluation_metric_value Latest metric measured on the reference set
+# TYPE cisia_evaluation_metric_value gauge
+# HELP cisia_evaluation_metric_absolute_min Absolute quality floor per metric
+# TYPE cisia_evaluation_metric_absolute_min gauge
+# HELP cisia_evaluation_metric_baseline Golden-run metric value
+# TYPE cisia_evaluation_metric_baseline gauge
+# HELP cisia_evaluation_metric_drop_vs_baseline Baseline minus latest metric value
+# TYPE cisia_evaluation_metric_drop_vs_baseline gauge
+# HELP cisia_evaluation_metric_max_drop_vs_baseline Maximum permitted metric drop
+# TYPE cisia_evaluation_metric_max_drop_vs_baseline gauge
+# HELP cisia_evaluation_timestamp_seconds Unix time of the latest completed evaluation
+# TYPE cisia_evaluation_timestamp_seconds gauge
+cisia_evaluation_metric_value{metric="f1_macro"} 0.6455483000470972
+cisia_evaluation_metric_absolute_min{metric="f1_macro"} 0.6
+cisia_evaluation_metric_baseline{metric="f1_macro"} 0.6455483000470972
+cisia_evaluation_metric_drop_vs_baseline{metric="f1_macro"} 0.0
+cisia_evaluation_metric_max_drop_vs_baseline{metric="f1_macro"} 0.04
+cisia_evaluation_metric_value{metric="f1_classe_2"} 0.5395348837209303
+cisia_evaluation_metric_absolute_min{metric="f1_classe_2"} 0.5
+cisia_evaluation_metric_baseline{metric="f1_classe_2"} 0.5395348837209303
+cisia_evaluation_metric_drop_vs_baseline{metric="f1_classe_2"} 0.0
+cisia_evaluation_metric_max_drop_vs_baseline{metric="f1_classe_2"} 0.05
+cisia_evaluation_metric_value{metric="recall_classe_2"} 0.6444444444444445
+cisia_evaluation_metric_absolute_min{metric="recall_classe_2"} 0.5
+cisia_evaluation_metric_baseline{metric="recall_classe_2"} 0.6444444444444445
+cisia_evaluation_metric_drop_vs_baseline{metric="recall_classe_2"} 0.0
+cisia_evaluation_metric_max_drop_vs_baseline{metric="recall_classe_2"} 0.05
+cisia_evaluation_metric_value{metric="roc_auc_ovr_macro"} 0.8153350194642108
+cisia_evaluation_metric_absolute_min{metric="roc_auc_ovr_macro"} 0.7
+cisia_evaluation_metric_baseline{metric="roc_auc_ovr_macro"} 0.8153350194642108
+cisia_evaluation_metric_drop_vs_baseline{metric="roc_auc_ovr_macro"} 0.0
+cisia_evaluation_metric_max_drop_vs_baseline{metric="roc_auc_ovr_macro"} 0.04
+cisia_evaluation_timestamp_seconds 1790789571.1493926

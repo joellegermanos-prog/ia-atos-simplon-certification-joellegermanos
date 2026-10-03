@@ -1,0 +1,19 @@
+{
+  "model_version": "v1.0.0",
+  "reference_set": "data/reference_set.csv",
+  "n_reference": 500,
+  "metrics": {
+    "accuracy": 0.664,
+    "f1_macro": 0.6455483000470972,
+    "f1_classe_2": 0.5395348837209303,
+    "recall_classe_2": 0.6444444444444445,
+    "precision_classe_2": 0.464,
+    "roc_auc_ovr_macro": 0.8153350194642108
+  },
+  "target_column": "classe_retour_emploi",
+  "target_values": [
+    0,
+    1,
+    2
+  ]
+}

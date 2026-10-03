@@ -1,0 +1,120 @@
+{
+  "thresholds": {
+    "psi_warning": 0.25,
+    "ks_p_value": 0.05,
+    "chi2_p_value": 0.05
+  },
+  "data_drift": {
+    "numeric": {
+      "anciennete_poste_ans": {
+        "psi": 0.019943337895481226,
+        "ks": {
+          "statistic": 0.024666666666666667,
+          "p_value": 0.7516787908604354
+        }
+      }
+    },
+    "categorical": {
+      "niveau_diplome": {
+        "psi": 0.008961001964443062,
+        "chi2": {
+          "statistic": 6.7109611897792565,
+          "p_value": 0.08170386690688529
+        }
+      },
+      "code_rome_vise": {
+        "psi": 0.0575434936349409,
+        "chi2": {
+          "statistic": 42.61944927399969,
+          "p_value": 0.7279686019613467
+        }
+      },
+      "code_insee_commune": {
+        "psi": 7.255471494909336,
+        "chi2": {
+          "statistic": 1660.0380952380951,
+          "p_value": 0.6939062919065689
+        }
+      }
+    }
+  },
+  "concept_drift": {
+    "available": true,
+    "numeric": {
+      "anciennete_poste_ans": {
+        "reference_relationship": {
+          "statistic": 22.43259477424137,
+          "p_value": 0.004174475504600706
+        },
+        "current_relationship": {
+          "statistic": 6.448655214128401,
+          "p_value": 0.5971082811110479
+        }
+      }
+    },
+    "categorical": {
+      "niveau_diplome": {
+        "reference_relationship": {
+          "statistic": 205.90228461515295,
+          "p_value": 1.0508862643080932e-41
+        },
+        "current_relationship": {
+          "statistic": 231.54074841884096,
+          "p_value": 3.5911414424290033e-47
+        }
+      },
+      "code_rome_vise": {
+        "reference_relationship": {
+          "statistic": 297.6323774418389,
+          "p_value": 5.375027796192656e-22
+        },
+        "current_relationship": {
+          "statistic": 307.7023542358326,
+          "p_value": 1.701416256809101e-23
+        }
+      },
+      "code_insee_commune": {
+        "reference_relationship": {
+          "statistic": 2973.2015814857796,
+          "p_value": 1.3039616873787238e-26
+        },
+        "current_relationship": {
+          "statistic": 2964.315567671577,
+          "p_value": 3.599644982485683e-23
+        }
+      }
+    }
+  },
+  "confidence_drift": {
+    "available": true,
+    "numeric": {
+      "proba_0": {
+        "psi": 0.012485943546703128,
+        "ks": {
+          "statistic": 0.04133333333333333,
+          "p_value": 0.15414686242782993
+        }
+      },
+      "proba_1": {
+        "psi": 0.007092930616312341,
+        "ks": {
+          "statistic": 0.029333333333333333,
+          "p_value": 0.5388887940380214
+        }
+      },
+      "proba_2": {
+        "psi": 0.011417217357502148,
+        "ks": {
+          "statistic": 0.037333333333333336,
+          "p_value": 0.24679714612438308
+        }
+      }
+    }
+  },
+  "triangulation": {
+    "data_drift_requires": "PSI/KS/Chi2 significant on inputs",
+    "concept_drift_requires": "label relationship changes with current labels",
+    "diagnostic_note": "Statistical signals must be crossed with business and temporal context before retraining."
+  },
+  "generated_at_epoch": 1790778362.36337
+}

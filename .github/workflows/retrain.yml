@@ -1,0 +1,427 @@
+name: Retour-Emploi feedback retraining
+
+on:
+  workflow_dispatch:
+    inputs:
+      min_feedback:
+        description: Minimum number of unconsumed feedbacks
+        required: false
+        default: "200"
+      image_tag:
+        description: Retrainer image tag to run (defaults to the triggering commit SHA)
+        required: false
+        default: ""
+      rollback:
+        description: Set to "true" to revert to the previously promoted model instead of retraining
+        required: false
+        default: "false"
+  schedule:
+    - cron: "0 0 1 * *"
+
+concurrency:
+  # Nom de groupe partagé avec tout autre workflow qui touche au même
+  # docker-compose.yml (déploiement manuel, mise à jour d'image) : deux
+  # opérations sur le même projet Compose ne doivent jamais se chevaucher.
+  group: certification-production-compose
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.rollback == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH || secrets.DEPLOY_PATH }}
+    steps:
+      - name: Validate SSH rollback configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variable in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_PATH; do
+            if [ -z "${!variable}" ]; then
+              echo "Required deployment setting is missing: $variable" >&2
+              exit 1
+            fi
+          done
+
+      - name: Restore previous model over SSH
+        id: rollback
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          DEPLOY_PATH: ${{ env.DEPLOY_PATH }}
+        with:
+          host: ${{ env.DEPLOY_HOST }}
+          username: ${{ env.DEPLOY_USER }}
+          key: ${{ env.DEPLOY_SSH_KEY }}
+          port: ${{ env.DEPLOY_PORT }}
+          envs: DEPLOY_PATH
+          script_stop: true
+          script: |
+            set -eu
+            cd "$DEPLOY_PATH"
+            backup_dir="$DEPLOY_PATH/backups/env"
+            models_backup_dir="$DEPLOY_PATH/backups/models"
+            last_backup="$(find "$backup_dir" -maxdepth 1 -type f -name '*.env.bak' -printf '%T@ %p\n' | sort -nr | head -n 1 | cut -d' ' -f2-)"
+            if [ -z "$last_backup" ]; then
+              echo "No previous environment backup found in $backup_dir" >&2
+              exit 1
+            fi
+
+            backup_id="$(basename "$last_backup" .env.bak)"
+            previous_artifact="$(grep -a -m 1 'MODEL_ARTIFACT=' "$last_backup" | sed -E 's/.*MODEL_ARTIFACT[[:space:]]*=[[:space:]]*//; s/[\"\r]//g' || true)"
+            if [ "$previous_artifact" = "/app/models/cisia_emploi_promoted.joblib" ]; then
+              model_backup="$models_backup_dir/cisia_emploi_promoted_$backup_id.joblib"
+              metadata_backup="$models_backup_dir/cisia_emploi_promoted_$backup_id.json"
+              if [ ! -f "$model_backup" ] || [ ! -f "$metadata_backup" ]; then
+                echo "Previous promoted model backup is missing for $backup_id" >&2
+                exit 1
+              fi
+              cp -f "$model_backup" "$DEPLOY_PATH/services/model/models/cisia_emploi_promoted.joblib"
+              cp -f "$metadata_backup" "$DEPLOY_PATH/services/model/models/cisia_emploi_promoted.json"
+            fi
+
+            cp -f "$last_backup" "$DEPLOY_PATH/.env"
+            docker compose up -d --force-recreate model
+            docker compose ps model
+      - name: Publish rollback summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Retour-Emploi manual rollback"
+            echo "Execution: GitHub-hosted runner over SSH."
+            echo "SSH rollback step: ${{ steps.rollback.outcome || 'see job status' }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  retrain:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.rollback != 'true' }}
+    runs-on: [self-hosted, windows, x64, cisia-prod]
+    permissions:
+      contents: read
+      packages: read
+    env:
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      COMPOSE_PROJECT_NAME: certification
+      FEEDBACK_VOLUME_NAME: certification_feedback_data
+      IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+      IMAGE_TAG: ${{ inputs.image_tag != '' && inputs.image_tag || github.sha }}
+      GHCR_USERNAME: ${{ github.actor }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      MIN_FEEDBACK: ${{ inputs.min_feedback || '200' }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      ROLLBACK_REQUESTED: ${{ inputs.rollback || 'false' }}
+    steps:
+      - name: Validate local deployment configuration
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ([string]::IsNullOrWhiteSpace($env:DEPLOY_PATH)) {
+            throw "DEPLOY_PATH must point to the deployed certification project."
+          }
+          $composeFile = Join-Path $env:DEPLOY_PATH "docker-compose.yml"
+          if (-not (Test-Path -LiteralPath $composeFile)) {
+            throw "No docker-compose.yml found in DEPLOY_PATH: $env:DEPLOY_PATH"
+          }
+          docker info --format "{{.ServerVersion}}" | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            throw "The self-hosted runner cannot access the Docker engine."
+          }
+          docker volume inspect $env:FEEDBACK_VOLUME_NAME | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            throw "Docker volume '$env:FEEDBACK_VOLUME_NAME' was not found. Check COMPOSE_PROJECT_NAME."
+          }
+
+      # ------------------------------------------------------------------
+      # ROLLBACK MANUEL : restaure le .env et l'artefact modèle sauvegardés
+      # ensemble par le snapshot du run promu correspondant.
+      # ------------------------------------------------------------------
+      - name: Manual rollback to previous model
+        id: rollback
+        if: env.ROLLBACK_REQUESTED == 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Push-Location -LiteralPath $env:DEPLOY_PATH
+          try {
+            $backupDir = Join-Path $env:DEPLOY_PATH "backups\env"
+            $lastBackup = Get-ChildItem -LiteralPath $backupDir -Filter "*.env.bak" -ErrorAction Stop |
+              Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+            if (-not $lastBackup) {
+              throw "No previous .env backup found in $backupDir. Cannot roll back."
+            }
+
+            $backupId = $lastBackup.Name -replace '\.env\.bak$', ''
+            $backupContents = Get-Content -LiteralPath $lastBackup.FullName
+            $artifactLine = $backupContents |
+              Where-Object { $_ -match '^\s*MODEL_ARTIFACT\s*=' } |
+              Select-Object -First 1
+            if ($artifactLine) {
+              $previousArtifact = ($artifactLine -split '=', 2)[1].Trim().Trim('"')
+            } else {
+              $previousArtifact = "/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
+            }
+
+            if ($previousArtifact -eq "/app/models/cisia_emploi_promoted.joblib") {
+              $modelsBackupDir = Join-Path $env:DEPLOY_PATH "backups\models"
+              $modelBackupPath = Join-Path $modelsBackupDir "cisia_emploi_promoted_$backupId.joblib"
+              $metadataBackupPath = Join-Path $modelsBackupDir "cisia_emploi_promoted_$backupId.json"
+              if (-not (Test-Path -LiteralPath $modelBackupPath) -or
+                  -not (Test-Path -LiteralPath $metadataBackupPath)) {
+                throw "The previous promoted model backup is missing for rollback id $backupId."
+              }
+              $modelsDir = Join-Path $env:DEPLOY_PATH "services\model\models"
+              Copy-Item -LiteralPath $modelBackupPath -Destination (Join-Path $modelsDir "cisia_emploi_promoted.joblib") -Force
+              Copy-Item -LiteralPath $metadataBackupPath -Destination (Join-Path $modelsDir "cisia_emploi_promoted.json") -Force
+            }
+
+            Copy-Item -LiteralPath $lastBackup.FullName -Destination (Join-Path $env:DEPLOY_PATH ".env") -Force
+            Write-Host "Restored model configuration from backup: $($lastBackup.Name)"
+
+            docker compose up -d --force-recreate model
+            if ($LASTEXITCODE -ne 0) {
+              throw "Rollback failed: could not recreate the model service."
+            }
+
+            "status=rolled_back" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+            "restored_backup=$($lastBackup.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          }
+          finally {
+            Pop-Location
+          }
+
+      - name: Snapshot current model and configuration
+        id: snapshot
+        if: env.ROLLBACK_REQUESTED != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Push-Location -LiteralPath $env:DEPLOY_PATH
+          try {
+            $backupId = "$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+            $modelsBackupDir = Join-Path $env:DEPLOY_PATH "backups\models"
+            $envBackupDir = Join-Path $env:DEPLOY_PATH "backups\env"
+            $resultPath = Join-Path $env:DEPLOY_PATH "reports\retrain-result.json"
+            New-Item -ItemType Directory -Path $modelsBackupDir -Force | Out-Null
+            New-Item -ItemType Directory -Path $envBackupDir -Force | Out-Null
+            if (Test-Path -LiteralPath $resultPath) {
+              Remove-Item -LiteralPath $resultPath -Force
+            }
+
+            $modelsDir = Join-Path $env:DEPLOY_PATH "services\model\models"
+            $currentModelPath = Join-Path $modelsDir "cisia_emploi_promoted.joblib"
+            $currentMetadataPath = Join-Path $modelsDir "cisia_emploi_promoted.json"
+            if (Test-Path -LiteralPath $currentModelPath) {
+              Copy-Item -LiteralPath $currentModelPath -Destination (Join-Path $modelsBackupDir "cisia_emploi_promoted_$backupId.joblib") -Force
+              if (Test-Path -LiteralPath $currentMetadataPath) {
+                Copy-Item -LiteralPath $currentMetadataPath -Destination (Join-Path $modelsBackupDir "cisia_emploi_promoted_$backupId.json") -Force
+              }
+            }
+
+            $envFile = Join-Path $env:DEPLOY_PATH ".env"
+            $envBackupPath = Join-Path $envBackupDir "$backupId.env.bak"
+            if (Test-Path -LiteralPath $envFile) {
+              Copy-Item -LiteralPath $envFile -Destination $envBackupPath -Force
+            } else {
+              "MODEL_ARTIFACT=/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib" |
+                Set-Content -LiteralPath $envBackupPath -Encoding utf8
+            }
+
+            $previousArtifactLine = Get-Content -LiteralPath $envBackupPath |
+              Where-Object { $_ -match '^\s*MODEL_ARTIFACT\s*=' } |
+              Select-Object -First 1
+            if ($previousArtifactLine -and
+                ($previousArtifactLine -split '=', 2)[1].Trim().Trim('"') -eq "/app/models/cisia_emploi_promoted.joblib" -and
+                ((-not (Test-Path -LiteralPath (Join-Path $modelsBackupDir "cisia_emploi_promoted_$backupId.joblib"))) -or
+                 (-not (Test-Path -LiteralPath (Join-Path $modelsBackupDir "cisia_emploi_promoted_$backupId.json"))))) {
+              throw "The active promoted model or its metadata could not be backed up. Retraining was not started."
+            }
+
+            Get-ChildItem -LiteralPath $envBackupDir -Filter "*.env.bak" |
+              Sort-Object LastWriteTime -Descending | Select-Object -Skip 10 |
+              Remove-Item -Force
+            $oldModelBackups = Get-ChildItem -LiteralPath $modelsBackupDir -Filter "cisia_emploi_promoted_*.joblib" |
+              Sort-Object LastWriteTime -Descending | Select-Object -Skip 10
+            foreach ($oldBackup in $oldModelBackups) {
+              $oldMetadata = [System.IO.Path]::ChangeExtension($oldBackup.FullName, ".json")
+              Remove-Item -LiteralPath $oldBackup.FullName -Force
+              if (Test-Path -LiteralPath $oldMetadata) {
+                Remove-Item -LiteralPath $oldMetadata -Force
+              }
+            }
+
+            "backup_id=$backupId" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          }
+          finally {
+            Pop-Location
+          }
+
+      - name: Run retrainer on the production feedback volume
+        id: retrain
+        if: env.ROLLBACK_REQUESTED != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Push-Location -LiteralPath $env:DEPLOY_PATH
+          try {
+            $env:GHCR_TOKEN | docker login ghcr.io --username $env:GHCR_USERNAME --password-stdin
+            if ($LASTEXITCODE -ne 0) { throw "GHCR login failed." }
+
+            docker compose --profile retrain pull retrainer
+            if ($LASTEXITCODE -ne 0) { throw "Could not pull the retrainer image for tag $env:IMAGE_TAG." }
+
+            docker compose --profile retrain run --rm retrainer python scripts/retrain.py --min-feedback $env:MIN_FEEDBACK
+            if ($LASTEXITCODE -ne 0) { throw "The retraining container failed with exit code $LASTEXITCODE." }
+
+            $resultPath = Join-Path $env:DEPLOY_PATH "reports\retrain-result.json"
+            if (-not (Test-Path -LiteralPath $resultPath)) {
+              throw "Retraining did not write its result report: $resultPath"
+            }
+            $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+            if ([string]::IsNullOrWhiteSpace($result.status)) {
+              throw "The retraining result report has no status."
+            }
+            if ($result.status -notin @("promoted", "rejected", "skipped_low_volume")) {
+              throw "The retraining result report has an unsupported status: $($result.status)"
+            }
+            "status=$($result.status)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+            $snapshotId = "${{ steps.snapshot.outputs.backup_id }}"
+            $envBackupPath = Join-Path $env:DEPLOY_PATH "backups\env\$snapshotId.env.bak"
+            $modelsBackupDir = Join-Path $env:DEPLOY_PATH "backups\models"
+            $modelBackupPath = Join-Path $modelsBackupDir "cisia_emploi_promoted_$snapshotId.joblib"
+            $metadataBackupPath = Join-Path $modelsBackupDir "cisia_emploi_promoted_$snapshotId.json"
+
+            if ($result.status -eq "promoted") {
+              $envFile = Join-Path $env:DEPLOY_PATH ".env"
+              $envLines = @()
+              if (Test-Path -LiteralPath $envFile) {
+                $envLines = @(Get-Content -LiteralPath $envFile)
+              }
+              $artifactSetting = "MODEL_ARTIFACT=/app/models/cisia_emploi_promoted.joblib"
+              $artifactIndex = -1
+              for ($index = 0; $index -lt $envLines.Count; $index++) {
+                if ($envLines[$index] -match '^\s*MODEL_ARTIFACT\s*=') {
+                  $artifactIndex = $index
+                  break
+                }
+              }
+              if ($artifactIndex -ge 0) {
+                $envLines[$artifactIndex] = $artifactSetting
+              } else {
+                $envLines += $artifactSetting
+              }
+
+              $tempEnvFile = "$envFile.tmp"
+              Set-Content -LiteralPath $tempEnvFile -Value $envLines -Encoding utf8
+              Move-Item -LiteralPath $tempEnvFile -Destination $envFile -Force
+
+              # --- 3. Activation, avec restauration automatique en cas d'échec ---
+              docker compose up -d --force-recreate model
+              if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Activation failed: restoring the previous .env automatically."
+                if (-not (Test-Path -LiteralPath $envBackupPath)) {
+                  throw "Automatic restoration failed: the previous .env backup is missing."
+                }
+                $previousArtifactLine = Get-Content -LiteralPath $envBackupPath |
+                  Where-Object { $_ -match '^\s*MODEL_ARTIFACT\s*=' } |
+                  Select-Object -First 1
+                $previousArtifact = if ($previousArtifactLine) {
+                  ($previousArtifactLine -split '=', 2)[1].Trim().Trim('"')
+                } else {
+                  "/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
+                }
+                if ($previousArtifact -eq "/app/models/cisia_emploi_promoted.joblib") {
+                  if (-not (Test-Path -LiteralPath $modelBackupPath) -or
+                      -not (Test-Path -LiteralPath $metadataBackupPath)) {
+                    throw "Automatic restoration failed: the previous promoted model backup is incomplete."
+                  }
+                  $modelsDir = Join-Path $env:DEPLOY_PATH "services\model\models"
+                  Copy-Item -LiteralPath $modelBackupPath -Destination (Join-Path $modelsDir "cisia_emploi_promoted.joblib") -Force
+                  Copy-Item -LiteralPath $metadataBackupPath -Destination (Join-Path $modelsDir "cisia_emploi_promoted.json") -Force
+                }
+                Copy-Item -LiteralPath $envBackupPath -Destination $envFile -Force
+                if ($previousArtifactLine) {
+                  $env:MODEL_ARTIFACT = $previousArtifact
+                } else {
+                  Remove-Item Env:MODEL_ARTIFACT -ErrorAction SilentlyContinue
+                }
+                docker compose up -d --force-recreate model
+                if ($LASTEXITCODE -ne 0) {
+                  throw "Automatic restoration of the previous model failed."
+                }
+                throw "The promoted model could not be activated. Previous .env restored."
+              }
+
+            } else {
+              if (Test-Path -LiteralPath $envBackupPath) {
+                Remove-Item -LiteralPath $envBackupPath -Force
+              }
+              foreach ($backupPath in @($modelBackupPath, $metadataBackupPath)) {
+                if (Test-Path -LiteralPath $backupPath) {
+                  Remove-Item -LiteralPath $backupPath -Force
+                }
+              }
+            }
+          }
+          finally {
+            Pop-Location
+          }
+
+      - name: Publish retraining summary
+        if: always()
+        shell: pwsh
+        run: |
+          $summaryPath = $env:GITHUB_STEP_SUMMARY
+          "## Retour-Emploi feedback retraining" | Add-Content -LiteralPath $summaryPath
+          "Runner: self-hosted Windows runner on the deployment host." | Add-Content -LiteralPath $summaryPath
+
+          if ($env:ROLLBACK_REQUESTED -eq "true") {
+            "Mode: manual rollback." | Add-Content -LiteralPath $summaryPath
+            "Outcome: ${{ steps.rollback.outcome }}." | Add-Content -LiteralPath $summaryPath
+            if ("${{ steps.rollback.outputs.restored_backup }}" -ne "") {
+              "Restored backup: ${{ steps.rollback.outputs.restored_backup }}." | Add-Content -LiteralPath $summaryPath
+            }
+          } else {
+            "Compose project: $env:COMPOSE_PROJECT_NAME; feedback volume: $env:FEEDBACK_VOLUME_NAME." | Add-Content -LiteralPath $summaryPath
+            "Image tag: $env:IMAGE_TAG; minimum feedbacks: $env:MIN_FEEDBACK." | Add-Content -LiteralPath $summaryPath
+            "Retraining step outcome: ${{ steps.retrain.outcome }}." | Add-Content -LiteralPath $summaryPath
+
+            $resultPath = Join-Path $env:DEPLOY_PATH "reports\retrain-result.json"
+            if (Test-Path -LiteralPath $resultPath) {
+              $resultJson = Get-Content -LiteralPath $resultPath -Raw
+              $result = $resultJson | ConvertFrom-Json
+              "Retraining status: $($result.status)." | Add-Content -LiteralPath $summaryPath
+              '```json' | Add-Content -LiteralPath $summaryPath
+              $resultJson | Add-Content -LiteralPath $summaryPath
+              '```' | Add-Content -LiteralPath $summaryPath
+              if ($result.status -eq "promoted" -and "${{ steps.retrain.outcome }}" -eq "success") {
+                "Promoted model activated. Rollback available via workflow_dispatch (rollback: true)." | Add-Content -LiteralPath $summaryPath
+              } elseif ($result.status -eq "promoted") {
+                "Promotion passed but activation failed; automatic restoration was attempted. Check the job logs." | Add-Content -LiteralPath $summaryPath
+              }
+            }
+          }
+
+      - name: Notify on failure, promotion or rollback
+        if: always() && (failure() || steps.retrain.outputs.status == 'promoted' || steps.rollback.outputs.status == 'rolled_back')
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:SLACK_WEBHOOK_URL)) {
+            Write-Host "SLACK_WEBHOOK_URL non configuré : notification ignorée."
+            exit 0
+          }
+          if ("${{ job.status }}" -eq "failure") {
+            $message = "Échec du workflow Retour-Emploi (run ${{ github.run_id }}). Voir les logs."
+          } elseif ("${{ steps.rollback.outputs.status }}" -eq "rolled_back") {
+            $message = "Rollback manuel effectué sur Retour-Emploi (run ${{ github.run_id }})."
+          } else {
+            $message = "Nouveau modèle Retour-Emploi promu et activé (run ${{ github.run_id }}, image $env:IMAGE_TAG)."
+          }
+          $body = @{ text = $message } | ConvertTo-Json -Compress
+          Invoke-RestMethod -Uri $env:SLACK_WEBHOOK_URL -Method Post -ContentType "application/json" -Body $body | Out-Null

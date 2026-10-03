@@ -1,0 +1,161 @@
+# docker-compose.yml — SQUELETTE À COMPLÉTER
+# Le service `model`, `prometheus` et `grafana` sont câblés.
+# À vous d'ajouter `backend` et `frontend` (cf. TODO).
+
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.17.2
+    command: >-
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow-data/mlflow.db
+      --artifacts-destination /mlflow-artifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_backend:/mlflow-data
+      - mlflow_artifacts:/mlflow-artifacts
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/version')"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+  model:
+    build: ./services/model
+    image: "${IMAGE_PREFIX:-cisia-emploi}/model:${IMAGE_TAG:-latest}"
+    ports:
+      - "8000:8000"
+    environment:
+      MLFLOW_TRACKING_URI: "${MLFLOW_TRACKING_URI:-http://mlflow:5000}"
+      MODEL_ARTIFACT: "${MODEL_ARTIFACT:-/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib}"
+      ALLOW_DIRECT_TRAIN: "${ALLOW_DIRECT_TRAIN:-false}"
+    volumes:
+      - ./mlruns:/app/mlruns
+      - ./services/model/models:/app/models:ro
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 20s
+      retries: 3
+
+  # TODO 1 — service `backend` :
+  #   build ./services/backend, port 8001, env MODEL_URL=http://model:8000
+  #   + ALLOWED_ORIGINS, depends_on model (condition service_healthy),
+  #   healthcheck sur /health.
+  backend:
+    build: ./services/backend
+    image: "${IMAGE_PREFIX:-cisia-emploi}/backend:${IMAGE_TAG:-latest}"
+    ports:
+      - "8001:8001"
+    environment:
+      MODEL_URL: "http://model:8000"
+      ALLOWED_ORIGINS: "http://frontend,http://127.0.0.1:8088"
+      FEEDBACK_DB: "/app/data/feedbacks.db"
+      RETRAIN_METRICS_FILE: "/app/reports/retrain.prom"
+      EVALUATION_METRICS_FILE: "/app/reports/evaluation.prom"
+      ABSTENTION_THRESHOLD: "${ABSTENTION_THRESHOLD:-0.55}"
+      CLASS_2_ESCALATION_THRESHOLD: "${CLASS_2_ESCALATION_THRESHOLD:-0.04}"
+      USER_REGISTRY_URL: "${USER_REGISTRY_URL:-}"
+      USER_REGISTRY_TIMEOUT_SECONDS: "${USER_REGISTRY_TIMEOUT_SECONDS:-2}"
+    volumes:
+      - feedback_data:/app/data
+      - ./reports:/app/reports:ro
+    depends_on:
+      model:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8001/health').status==200 else 1)"
+        ]
+      interval: 10s
+      timeout: 3s
+      start_period: 20s
+      retries: 3
+
+  # TODO 2 — service `frontend` :
+  #   build ./services/frontend, port hôte 8088 -> 80 (évite le conflit 8080),
+  #   depends_on backend (service_healthy), + son propre healthcheck
+  #   (le critère du brief est « les 3 services healthy », pas 2).
+  #   ⚠️ Dans l'image nginx, sondez `http://127.0.0.1/` et pas
+  #   `http://localhost/` : `listen 80;` ne bind que l'IPv4, et `localhost`
+  #   résout ::1 en premier → connection refused, service `unhealthy`.
+  frontend:
+    build: ./services/frontend
+    image: "${IMAGE_PREFIX:-cisia-emploi}/frontend:${IMAGE_TAG:-latest}"
+    ports:
+      - "8088:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://127.0.0.1/"
+        ]
+      interval: 10s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - model
+
+  grafana:
+    image: grafana/grafana:11.2.2
+    ports:
+      - "3001:3000"            # 3001 hôte : évite le conflit 3000
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+
+  retrainer:
+    profiles: ["retrain"]
+    image: "${IMAGE_PREFIX:-cisia-emploi}/retrainer:${IMAGE_TAG:-latest}"
+    build:
+      context: .
+      dockerfile: services/retrainer/Dockerfile
+    environment:
+      FEEDBACK_DB: "/app/feedback-data/feedbacks.db"
+      DECISION_LOG: "/app/reports/decisions_log.jsonl"
+      RETRAIN_RESULT_PATH: "/app/reports/retrain-result.json"
+      RETRAIN_METRICS_PATH: "/app/reports/retrain.prom"
+      MLFLOW_TRACKING_URI: "${MLFLOW_TRACKING_URI:-http://mlflow:5000}"
+    volumes:
+      - feedback_data:/app/feedback-data
+      - ./services/model/models:/app/services/model/models
+      - ./reports:/app/reports
+    restart: "no"
+    depends_on:
+      mlflow:
+        condition: service_healthy
+
+volumes:
+  feedback_data:
+  mlflow_backend:
+  mlflow_artifacts:

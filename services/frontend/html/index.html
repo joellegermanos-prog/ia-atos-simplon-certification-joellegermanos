@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Retour-Emploi - Orientation vers le retour à l'emploi</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin: .7rem 0 .2rem; font-size: .9rem; }
+    input, select, textarea { width: 100%; padding: .55rem; box-sizing: border-box; }
+    textarea { min-height: 120px; resize: vertical; }
+    .checkbox-row { display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 1rem; }
+    .checkbox-label { display: flex; align-items: center; gap: .5rem; margin: 0; }
+    .checkbox-label input { width: auto; }
+    .hint { color: #57606a; font-size: .8rem; }
+    button { margin-top: 1rem; padding: .7rem 1.2rem; font-size: 1rem; cursor: pointer; }
+    #result { margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none; }
+    #feedbackPanel { width: min(520px, 92vw); padding: 1.2rem; border: 1px solid #d0d7de; border-radius: 8px; }
+    #feedbackPanel::backdrop { background: rgba(0, 0, 0, .45); }
+    .dialog-header { display: flex; justify-content: space-between; align-items: center; }
+    .dialog-header h2 { margin: 0; font-size: 1.2rem; }
+    #closeFeedback { margin: 0; padding: .2rem .6rem; font-size: 1.2rem; }
+    #historyPanel { margin-top: 1rem; overflow-x: auto; display: none; width: min(1400px, 96vw); position: relative; left: 50%; transform: translateX(-50%); }
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    th, td { border: 1px solid #d0d7de; padding: .45rem; text-align: left; white-space: nowrap; }
+    td.long-text { white-space: normal; min-width: 260px; }
+    #historyScope { width: auto; margin-bottom: .6rem; }
+    .link-button { margin: 0; padding: 0; font: inherit; font-family: monospace; color: #0969da; background: none; border: none; text-decoration: underline; cursor: pointer; }
+    tr.selected { background: #fff8c5; }
+    #requestId { font-family: monospace; background: #f6f8fa; padding: .2rem .4rem; }
+    #feedbackStatus { min-height: 1.2rem; margin-bottom: 0; }
+    .ok { background: #e6f4ea; } .ko { background: #fce8e6; }
+  </style>
+</head>
+<body>
+  <h1>Orientation vers le retour a l'emploi</h1>
+  <p>Évaluez le délai probable de retour à l'emploi.</p>
+
+  <label for="usager_id">Identifiant usager</label>
+  <input type="text" id="usager_id" name="usager_id" maxlength="100" value="Joelle" placeholder="Identifiant du référentiel national" required>
+  <p id="sessionInfo" aria-live="polite"></p>
+
+  <form id="scoreForm">
+    <label for="niveau_diplome">Niveau de diplôme</label>
+    <select id="niveau_diplome" name="niveau_diplome" required>
+      <option>Sans diplôme</option>
+      <option>Bac</option>
+      <option selected>Bac+2</option>
+      <option>Bac+5</option>
+    </select>
+
+    <label for="anciennete_poste_ans">Ancienneté dans le dernier poste (années)</label>
+    <input type="number" step="0.1" min="0" id="anciennete_poste_ans" name="anciennete_poste_ans" value="3" required>
+
+    <label for="code_rome_vise">Code ROME visé</label>
+    <select id="code_rome_vise" name="code_rome_vise" required>
+      <option value="M1805" selected>M1805 - Études et développement informatique</option>
+      <option value="M1806">M1806 - Conseil et maîtrise d'ouvrage en systèmes d'information</option>
+      <option value="M1802">M1802 - Expertise et support en systèmes d'information</option>
+      <option value="M1403">M1403 - Études et développement marketing</option>
+      <option value="D1404">D1404 - Management et gestion de rayon alimentation</option>
+      <option value="F1602">F1602 - Électricité - bâtiment</option>
+      <option value="I1308">I1308 - Maintenance de machine industrielle</option>
+      <option value="N1103">N1103 - Magasinage et préparation de commandes</option>
+      <option value="K1304">K1304 - Services domestiques</option>
+      <option value="G1203">G1203 - Animation de loisirs divers</option>
+    </select>
+    <div class="checkbox-row">
+      <label class="checkbox-label" for="est_allocataire">
+        <input type="checkbox" id="est_allocataire" name="est_allocataire" value="1">
+        Allocataire
+      </label>
+    </div>
+
+    <label for="code_insee_commune">Code INSEE de la commune</label>
+    <input type="text" id="code_insee_commune" name="code_insee_commune"
+      value="75056" minlength="5" maxlength="5" pattern="[0-9]{5}|2[AB][0-9]{3}"
+      autocapitalize="characters" autocomplete="off" required
+      aria-describedby="codeInseeHint" title="Saisissez un code INSEE communal à 5 caractères, par exemple 75056 ou 2A004.">
+    <p class="hint" id="codeInseeHint">5 caractères : chiffres, ou 2A/2B suivi de 3 chiffres pour la Corse. Exemple : 75056.</p>
+
+    <label for="synthese_entretien">Synthèse de l'entretien</label>
+    <textarea id="synthese_entretien" name="synthese_entretien" required>Recherche un emploi stable dans le domaine informatique.</textarea>
+
+    <button type="submit">Évaluer le retour à l'emploi</button>
+  </form>
+
+  <div id="result"></div>
+
+  <dialog id="feedbackPanel" aria-labelledby="feedbackTitle">
+    <div class="dialog-header">
+      <h2 id="feedbackTitle">Confirmer le résultat observé</h2>
+      <button type="button" id="closeFeedback" aria-label="Fermer">&times;</button>
+    </div>
+    <p>Dossier scoré : <strong id="requestId"></strong></p>
+    <form id="feedbackForm">
+      <label for="trueLabel">Résultat réel du dossier</label>
+      <select id="trueLabel" name="true_label" required>
+        <option value="0">Retour rapide</option>
+        <option value="1">Retour moyen</option>
+        <option value="2">Risque de chômage longue durée</option>
+      </select>
+      <label for="feedbackComments">Commentaire conseiller (facultatif)</label>
+      <textarea id="feedbackComments" name="comments" placeholder="Contexte ou précision utile pour le prochain entraînement"></textarea>
+      <button type="submit">Enregistrer le résultat</button>
+      <p id="feedbackStatus" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <button type="button" id="toggleHistory" aria-controls="historyPanel" aria-expanded="false">Voir l'historique des inférences</button>
+
+  <section id="historyPanel" aria-labelledby="historyTitle">
+    <h2 id="historyTitle">Historique des inférences</h2>
+    <p>Cliquez sur un Request ID pour saisir le résultat réel du dossier.</p>
+    <label for="historyScope">Afficher</label>
+    <select id="historyScope">
+      <option value="session" selected>Session en cours</option>
+      <option value="all">Toutes les sessions</option>
+    </select>
+    <table>
+      <thead><tr>
+        <th>Date</th><th>Session</th><th>Usager</th><th>Diplôme</th><th>Ancienneté (ans)</th>
+        <th>Code ROME</th><th>Allocataire</th><th>Code INSEE commune</th><th>Synthèse de l'entretien</th>
+        <th>Prédiction</th><th>Orientation</th><th>Probabilités</th><th>Modèle</th><th>Request ID</th><th>Résultat réel</th><th>Commentaire</th>
+      </tr></thead>
+      <tbody id="historyBody"><tr><td colspan="16">Aucune inférence dans cette session.</td></tr></tbody>
+    </table>
+  </section>
+
+  <script>
+    const form = document.getElementById('scoreForm');
+    const result = document.getElementById('result');
+    const feedbackPanel = document.getElementById('feedbackPanel');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const requestIdElement = document.getElementById('requestId');
+    const trueLabel = document.getElementById('trueLabel');
+    const feedbackComments = document.getElementById('feedbackComments');
+    const feedbackStatus = document.getElementById('feedbackStatus');
+    const userId = document.getElementById('usager_id');
+    const sessionInfo = document.getElementById('sessionInfo');
+    const historyBody = document.getElementById('historyBody');
+    const historyPanel = document.getElementById('historyPanel');
+    const toggleHistory = document.getElementById('toggleHistory');
+    const historyScope = document.getElementById('historyScope');
+    const labels = { 0: 'Retour rapide', 1: 'Retour moyen', 2: 'Risque de chômage longue durée' };
+    const sessionId = crypto.randomUUID();
+    sessionInfo.textContent = `Session conseiller : ${sessionId}`;
+    let scoredRequestId = null;
+    let scoredPrediction = null;
+
+    function formatError(body, status) {
+      const detail = body && body.detail;
+      if (Array.isArray(detail)) {
+        return detail.map((item) => `${(item.loc || []).slice(1).join('.')} : ${item.msg}`).join(' ; ');
+      }
+      return detail || `HTTP ${status}`;
+    }
+
+    function openFeedback(requestId, prediction, knownTrueLabel = null) {
+      scoredRequestId = requestId;
+      scoredPrediction = prediction;
+      requestIdElement.textContent = requestId;
+      feedbackForm.querySelectorAll('select, textarea, button').forEach((element) => {
+        element.disabled = false;
+      });
+      feedbackComments.value = '';
+      if (knownTrueLabel !== null && knownTrueLabel !== undefined) {
+        trueLabel.value = String(knownTrueLabel);
+        feedbackStatus.textContent = `Résultat déjà enregistré : ${labels[knownTrueLabel]}.`;
+        feedbackForm.querySelectorAll('select, textarea, button').forEach((element) => {
+          element.disabled = true;
+        });
+      } else {
+        trueLabel.value = String(prediction);
+        feedbackStatus.textContent = '';
+      }
+      feedbackPanel.showModal();
+      historyBody.querySelectorAll('tr').forEach((row) => {
+        row.classList.toggle('selected', row.dataset.requestId === requestId);
+      });
+    }
+
+    async function loadHistory() {
+      const query = historyScope.value === 'all'
+        ? 'limit=200'
+        : `session_id=${encodeURIComponent(sessionId)}&limit=200`;
+      const response = await fetch(`/api/history?${query}`);
+      if (!response.ok) return;
+      const entries = await response.json();
+      historyBody.replaceChildren();
+      if (!entries.length) {
+        const emptyRow = document.createElement('tr');
+        const emptyCell = document.createElement('td');
+        emptyCell.colSpan = 16;
+        emptyCell.textContent = historyScope.value === 'all'
+          ? 'Aucune inférence enregistrée.'
+          : 'Aucune inférence dans cette session.';
+        emptyRow.appendChild(emptyCell);
+        historyBody.appendChild(emptyRow);
+        return;
+      }
+      entries.forEach((entry) => {
+        const row = document.createElement('tr');
+        row.dataset.requestId = entry.request_id;
+        row.classList.toggle('selected', entry.request_id === scoredRequestId);
+        const inputs = entry.inputs || {};
+        const codeInsee = String(inputs.code_insee_commune || '');
+        const addCell = (value, className) => {
+          const cell = document.createElement('td');
+          cell.textContent = value === null || value === undefined || value === '' ? '-' : value;
+          if (className) cell.className = className;
+          row.appendChild(cell);
+        };
+        addCell(new Date(entry.created_at).toLocaleString());
+        addCell(entry.session_id === sessionId ? 'En cours' : (entry.session_id || '').slice(0, 8));
+        addCell(entry.usager_id);
+        addCell(inputs.niveau_diplome);
+        addCell(inputs.anciennete_poste_ans);
+        addCell(inputs.code_rome_vise);
+        addCell(inputs.est_allocataire === undefined ? null : (Number(inputs.est_allocataire) === 1 ? 'Oui' : 'Non'));
+        addCell(codeInsee);
+        addCell(inputs.synthese_entretien, 'long-text');
+        addCell(labels[entry.prediction] || entry.prediction);
+        addCell(entry.needs_human_review ? 'Revue humaine requise' : 'Automatique');
+        addCell(Object.entries(entry.probabilities).map(([key, value]) => `${key}: ${(value * 100).toFixed(1)}%`).join(' | '));
+        addCell(entry.model_version);
+
+        const requestCell = document.createElement('td');
+        const requestButton = document.createElement('button');
+        requestButton.type = 'button';
+        requestButton.className = 'link-button';
+        requestButton.textContent = entry.request_id;
+        requestButton.title = 'Saisir le résultat réel de ce dossier';
+        requestButton.addEventListener('click', () => {
+          openFeedback(entry.request_id, entry.prediction, entry.true_label);
+        });
+        requestCell.appendChild(requestButton);
+        row.appendChild(requestCell);
+
+        const feedbackCell = document.createElement('td');
+        feedbackCell.textContent = entry.true_label === null || entry.true_label === undefined
+          ? 'À renseigner'
+          : labels[entry.true_label];
+        row.appendChild(feedbackCell);
+        addCell(entry.comments, 'long-text');
+        historyBody.appendChild(row);
+      });
+    }
+
+    historyScope.addEventListener('change', () => loadHistory().catch(() => {}));
+    document.getElementById('closeFeedback').addEventListener('click', () => feedbackPanel.close());
+
+    toggleHistory.addEventListener('click', () => {
+      const visible = historyPanel.style.display === 'block';
+      historyPanel.style.display = visible ? 'none' : 'block';
+      toggleHistory.setAttribute('aria-expanded', String(!visible));
+      toggleHistory.textContent = visible ? "Voir l'historique des inférences" : "Masquer l'historique";
+      if (!visible) loadHistory().catch(() => {});
+    });
+
+    loadHistory().catch(() => {});
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const codeInseeCommune = String(data.get('code_insee_commune') || '').trim().toUpperCase();
+      const payload = {
+        niveau_diplome: data.get('niveau_diplome'),
+        anciennete_poste_ans: Number(data.get('anciennete_poste_ans')),
+        code_rome_vise: data.get('code_rome_vise'),
+        est_allocataire: document.getElementById('est_allocataire').checked ? 1 : 0,
+        code_insee_commune: codeInseeCommune,
+        synthese_entretien: data.get('synthese_entretien')
+      };
+
+      try {
+        const response = await fetch('/api/score', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Session-ID': sessionId },
+          body: JSON.stringify({
+            ...payload,
+            usager_id: userId.value.trim() || null,
+            session_id: sessionId
+          })
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(formatError(body, response.status));
+
+        const probabilities = Object.entries(body.probabilities)
+          .map(([key, value]) => `${labels[key]} : ${(value * 100).toFixed(1)}%`)
+          .join(' | ');
+        const reasonLabels = {
+          low_confidence: 'confiance sous le seuil',
+          class_2_risk: 'risque classe 2 à confirmer'
+        };
+        const reviewNotice = body.needs_human_review
+          ? `À revoir par un conseiller (${body.review_reasons.map(reason => reasonLabels[reason] || reason).join(', ')}). Proposition du modèle : `
+          : '';
+        result.textContent = `${reviewNotice}${labels[body.prediction]} - ${probabilities} (modèle ${body.model_version}) - Request ID : ${body.request_id}`;
+        result.className = body.needs_human_review || body.prediction === 2 ? 'ko' : 'ok';
+        loadHistory().catch(() => {});
+      } catch (error) {
+        result.textContent = `Erreur : ${error.message}`;
+        result.className = 'ko';
+      }
+      result.style.display = 'block';
+    });
+
+    feedbackForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!scoredRequestId) return;
+
+      const submitButton = feedbackForm.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      feedbackStatus.textContent = 'Enregistrement...';
+      try {
+        const response = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            request_id: scoredRequestId,
+            prediction: scoredPrediction,
+            true_label: Number(trueLabel.value),
+            comments: feedbackComments.value || null
+          })
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(formatError(body, response.status));
+        feedbackStatus.textContent = body.status === 'already_registered'
+          ? 'Ce résultat avait déjà été enregistré.'
+          : 'Résultat enregistré pour la boucle de feedback.';
+        feedbackForm.querySelectorAll('select, textarea, button').forEach((element) => {
+          element.disabled = true;
+        });
+        loadHistory().catch(() => {});
+      } catch (error) {
+        feedbackStatus.textContent = `Erreur : ${error.message}`;
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+usager_id,age,niveau_diplome,anciennete_poste_ans,code_rome_vise,code_insee_commune,est_allocataire,nationalite_hors_ue,synthese_entretien,classe_retour_emploi
+ID_0293,53.0,Bac,2.2,D1210,69047,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1756,61.0,Bac+5,0.5,A1501,72048,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0626,20.0,Bac+2,1.1,D1210,74164,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2282,30.0,Bac+2,2.4,D1406,51162,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1793,58.0,Bac+5,0.4,D1210,16102,1.0,1,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_0839,44.0,Bac+2,0.2,K1903,59431,0.0,1,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_0352,57.0,Bac+5,0.7,N1303,42086,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1026,49.0,Bac,1.9,H1206,65277,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_1057,44.0,Bac+5,2.3,M1802,21341,1.0,1,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0515,43.0,Bac,0.9,K1403,62757,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0548,34.0,Bac,0.5,M1607,88500,1.0,1,"Candidat très dynamique, mobilité nationale validée. Projet clair.",2
+ID_1186,47.0,Bac+2,2.7,D1503,65200,1.0,0,,1
+ID_1210,36.0,Bac,11.2,A1301,62510,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0481,19.0,Bac,0.6,K1201,56228,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1537,22.0,Sans diplôme,7.2,A1202,59278,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1892,24.0,Bac,1.9,A1501,02540,0.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_2267,62.0,Bac,0.8,K1403,25421,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_0416,30.0,Bac,5.3,D1406,29286,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0241,58.0,Bac+2,2.5,F1603,47061,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1817,30.0,Bac+2,4.7,A1301,70145,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1295,60.0,Bac,5.3,G1602,70226,,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_0443,29.0,Bac+5,1.3,D1503,88023,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1927,25.0,Bac,2.2,I1304,41112,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0572,40.0,Bac+5,1.0,J1301,24290,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0524,42.0,Bac,0.8,A1301,77278,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1523,21.0,Sans diplôme,3.8,G1601,24450,0.0,1,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_0292,58.0,Bac+5,0.6,D1401,64387,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_0885,30.0,Sans diplôme,0.0,D1406,71244,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1850,28.0,Bac,0.7,G1801,57138,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",2
+ID_1702,34.0,,0.5,D1406,54591,,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_1539,26.0,Bac+5,5.1,C1110,85130,1.0,1,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",0
+ID_2047,44.0,Bac+2,6.4,G1302,78403,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1952,52.0,Bac+2,3.6,M1203,76193,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1565,42.0,Sans diplôme,1.0,N1101,28371,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0087,32.0,Bac+2,0.2,A1301,11120,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1953,54.0,Bac+2,1.5,G1302,46263,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_1267,22.0,Bac,4.5,N1303,54312,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",0
+ID_1412,43.0,Bac,0.6,N1301,70422,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0048,37.0,Bac+2,0.5,H1504,60677,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0473,49.0,Bac,0.2,N4301,02198,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,2
+ID_0327,61.0,Bac+5,1.1,K1903,33046,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0571,53.0,Bac,0.7,G1601,51339,0.0,0,,1
+ID_1220,,Bac+5,5.6,N4101,38343,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2173,30.0,Bac,1.9,N1301,44015,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_1629,56.0,Sans diplôme,3.3,D1210,51625,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_0650,28.0,Bac+2,0.3,I1304,72367,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0940,,Bac,8.4,D1401,31559,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_2291,25.0,Bac,2.8,N1101,2A141,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1964,20.0,Bac+2,1.5,C1110,60330,1.0,1,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_2470,33.0,Bac+2,0.8,H1206,51587,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",0
+ID_2474,56.0,Bac+5,5.3,C1302,23258,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0778,,Bac,0.9,N4301,01291,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0752,56.0,Bac+5,1.5,C1102,88324,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1347,28.0,Bac+2,1.9,C1201,88471,1.0,0,,0
+ID_1931,59.0,Bac,1.2,K1903,34145,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2177,47.0,Sans diplôme,0.5,M1203,62828,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0014,41.0,Sans diplôme,1.6,G1203,07257,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1798,58.0,Sans diplôme,0.3,H1504,57689,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1951,19.0,Bac,0.2,D1210,59278,1.0,0,,1
+ID_2427,21.0,Bac+5,5.9,M1802,05162,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0831,58.0,Bac+2,1.7,G1602,59551,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_1930,40.0,Bac+5,0.7,M1607,91021,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0134,44.0,Bac+2,2.6,M1805,03299,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1995,26.0,Sans diplôme,4.0,K2106,60326,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0000,56.0,Bac+2,2.6,D1503,18273,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1489,42.0,Bac+5,0.9,K1403,71588,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0004,25.0,Sans diplôme,1.2,N1301,21302,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_0145,47.0,Bac,0.1,C1110,23012,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2133,32.0,Bac+2,2.3,K2106,19280,0.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_2093,42.0,Sans diplôme,3.1,A1301,10406,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0105,59.0,Bac+5,9.5,F1603,80185,1.0,0,,1
+ID_1948,34.0,Bac+5,0.8,G1602,14646,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_0616,23.0,Bac,1.1,N1303,71406,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0318,47.0,Bac,0.9,G1801,76221,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1728,36.0,Bac+5,0.2,C1201,16218,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1092,57.0,Bac,5.0,M1806,88127,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1768,37.0,Sans diplôme,0.4,K1201,06149,0.0,1,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2233,34.0,,2.0,C1201,49338,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_1780,38.0,Bac+5,3.8,C1302,66052,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0715,30.0,Bac,4.1,K2101,77216,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0368,56.0,Bac,5.0,N4301,02175,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1261,59.0,Sans diplôme,1.9,N4301,47086,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1656,27.0,Bac+2,0.3,M1501,11176,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_2064,26.0,Bac,3.3,M1501,51611,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1529,27.0,Bac,0.5,C1302,86152,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0983,32.0,Bac,1.6,D1401,81016,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1980,37.0,Sans diplôme,4.6,H2502,71232,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_1694,28.0,Bac,0.1,H1504,06076,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",1
+ID_0079,62.0,Bac+5,12.1,A1401,30350,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,2
+ID_1690,50.0,Bac+5,0.8,K1601,25597,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_2077,63.0,Sans diplôme,0.6,H2502,91121,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1556,54.0,Bac,1.4,M1806,27083,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0892,62.0,Bac,2.6,H2502,60598,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0199,34.0,Sans diplôme,4.8,H1206,29272,1.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0825,59.0,Bac,0.3,M1607,02732,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,2
+ID_0678,43.0,Sans diplôme,1.9,M1501,59292,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_1235,49.0,Bac+5,3.9,N4301,34045,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0328,45.0,Bac,1.6,D1210,32410,1.0,1,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0246,57.0,Bac+2,4.0,G1601,28317,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2117,63.0,Bac,2.6,N4101,13094,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",2
+ID_1922,38.0,Bac,0.2,M1705,02668,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_0791,34.0,Bac+2,7.7,K1903,11275,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1308,59.0,Bac+2,0.4,A1401,02251,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_2462,26.0,Sans diplôme,0.3,C1110,26033,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_0707,35.0,Sans diplôme,4.1,C1302,48158,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1463,35.0,Bac+2,10.4,G1801,14280,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_2210,41.0,Sans diplôme,0.1,H2502,15229,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0764,32.0,Bac,2.3,C1501,64354,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_0125,,Bac+5,1.5,J1506,44224,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_1513,60.0,Bac,8.3,D1502,21225,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,2
+ID_1377,59.0,Bac+2,5.6,G1302,88083,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0488,52.0,Bac+5,2.2,K1304,65261,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0083,42.0,Bac+2,0.4,D1210,73221,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0658,31.0,Bac,10.1,K2101,17159,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_0911,39.0,Bac+2,0.8,N1301,23219,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1918,,Bac+5,1.6,K1601,28248,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1048,50.0,Sans diplôme,1.9,M1806,70167,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_1107,57.0,Bac,1.6,K2111,11389,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1701,21.0,Sans diplôme,5.2,K1903,26035,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_1022,25.0,Sans diplôme,0.6,C1201,63415,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_2011,60.0,Bac+5,0.7,K1403,03036,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0027,61.0,Bac,2.6,D1503,54062,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_0773,55.0,Sans diplôme,1.7,K1304,06133,0.0,1,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_0557,36.0,Bac,2.4,M1203,65427,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2461,36.0,,7.0,H2502,17446,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1575,51.0,Bac,3.9,M1602,28015,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",2
+ID_1506,26.0,Bac,7.2,D1210,42167,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1746,42.0,Bac+2,0.2,A1301,46283,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0446,54.0,Sans diplôme,1.7,C1102,03229,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_1040,23.0,Bac+5,0.3,A1401,60317,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1963,27.0,Bac+2,0.4,M1801,17444,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_2435,45.0,Bac,1.1,N4301,76503,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1444,,Bac+5,3.5,N1101,59473,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0313,25.0,Bac,1.0,M1801,51616,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0333,52.0,Sans diplôme,1.1,H2502,59205,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1131,43.0,Sans diplôme,0.8,G1801,78431,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1215,45.0,Bac+5,1.1,M1802,21036,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_1714,37.0,Bac+2,1.6,K2101,11120,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_0350,48.0,Bac+2,1.6,H1504,49090,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_1914,23.0,Sans diplôme,0.9,J1301,67166,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1582,35.0,Bac+2,16.7,A1501,26355,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_0455,29.0,Sans diplôme,2.7,A1203,88258,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_0729,20.0,Bac+2,0.7,G1601,06068,0.0,1,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0661,18.0,Bac,2.4,M1501,38244,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1511,54.0,Bac+5,1.1,M1607,81272,1.0,1,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2058,,Bac,1.4,J1506,25425,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",0
+ID_0484,44.0,,3.9,A1203,06037,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1458,21.0,Bac+5,6.8,H1504,50078,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1636,46.0,Sans diplôme,2.0,A1501,59263,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_0695,52.0,Bac+5,1.4,C1201,40078,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1837,26.0,Bac,1.8,M1805,65054,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_1184,36.0,Sans diplôme,3.4,M1501,59016,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1528,63.0,Bac+5,3.0,K1403,33147,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1715,39.0,Bac,4.4,C1201,11181,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2072,58.0,Bac,2.9,A1203,27246,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1502,42.0,Bac,0.8,H1206,88324,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1232,49.0,Bac,5.0,C1302,24462,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_0045,26.0,Bac+2,7.2,K1403,16121,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0417,59.0,Bac+5,3.7,K1903,37022,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1628,47.0,Bac+2,6.1,A1202,57142,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1816,58.0,Bac,0.8,G1302,51134,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1738,29.0,Bac,2.5,A1203,88373,0.0,0,,2
+ID_0229,33.0,Bac,1.3,K2101,62389,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1001,46.0,Bac+2,1.9,K1304,25393,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0824,45.0,Bac,2.0,C1201,21365,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_0191,49.0,,0.8,A1203,11257,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_1438,35.0,Bac,2.1,K1903,40182,0.0,1,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",1
+ID_2037,43.0,Sans diplôme,2.5,J1301,48090,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_2340,23.0,Bac+5,0.6,W1401,21630,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1868,62.0,Bac,3.2,M1705,26051,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1097,,Bac,2.3,G1801,02346,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0797,51.0,Bac,2.8,M1806,16359,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2050,63.0,Sans diplôme,3.9,D1406,45260,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_0759,22.0,Bac,5.6,N4101,57384,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0072,32.0,Bac,2.6,D1503,88077,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_2125,45.0,Bac+5,7.3,D1502,54208,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0267,52.0,Bac,1.6,N1101,28310,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2275,26.0,Bac+5,0.6,K1601,54421,1.0,1,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1289,19.0,Bac+5,6.3,G1801,62322,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1456,56.0,Bac+2,7.4,K1201,45207,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2163,46.0,Bac,1.3,A1202,34225,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1103,57.0,Bac,16.2,A1203,49027,0.0,1,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_2111,52.0,Bac+5,3.4,D1210,85233,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1696,43.0,Bac+5,10.1,G1203,50034,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0675,25.0,Bac,6.4,N4101,76546,0.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_2085,58.0,Bac,2.1,M1801,63109,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2229,61.0,Bac,0.4,A1401,14715,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0679,25.0,Bac+5,0.8,C1102,71481,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_2253,59.0,Bac+5,0.3,N4101,78518,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1024,57.0,Bac+5,1.1,M1501,59164,1.0,1,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_2176,42.0,Bac+5,1.7,K1304,24335,1.0,1,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0097,41.0,Bac,1.3,D1210,76012,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_2450,22.0,Bac,5.0,C1201,51582,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_0491,60.0,,2.9,H1206,88349,1.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0355,49.0,Bac+2,1.4,G1801,76175,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1084,53.0,Sans diplôme,0.3,K2111,51027,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1385,47.0,Bac,0.6,C1110,17145,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_1391,61.0,Sans diplôme,0.2,H2502,30323,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,2
+ID_1901,45.0,Bac+5,8.8,M1602,29297,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1004,58.0,Bac,3.6,W1401,11362,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_2266,56.0,Bac+2,2.1,D1210,70386,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0783,32.0,Bac+5,2.3,C1302,53250,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1553,26.0,Bac+5,0.3,A1401,01321,1.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2020,55.0,Sans diplôme,1.1,J1506,30101,1.0,1,Problème ponctuel de mobilité géographique. Zone mal desservie.,2
+ID_1851,37.0,Bac+2,6.2,J1301,31332,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_1158,41.0,Bac+5,10.2,C1110,24409,0.0,1,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0390,19.0,Sans diplôme,4.2,M1802,84083,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0253,47.0,Bac,2.2,K1201,17387,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1019,42.0,Bac,1.9,G1601,45173,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_1268,,Bac+2,5.0,H1504,26145,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1251,36.0,Bac+5,3.0,M1801,27342,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1141,27.0,Bac+5,6.0,M1705,27097,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1406,25.0,Bac,0.4,N4301,22308,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_0765,54.0,Bac,3.0,C1102,60054,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0011,41.0,Bac,1.5,M1607,89277,1.0,1,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_1218,46.0,,4.5,A1301,71234,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1206,20.0,Bac+5,3.7,M1602,57519,0.0,0,,1
+ID_1873,25.0,Bac,0.4,G1801,17462,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_0332,23.0,Sans diplôme,8.2,M1801,79190,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0730,40.0,Sans diplôme,0.0,J1301,58078,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0346,20.0,Bac,1.7,G1801,59412,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2010,41.0,Bac,5.4,F1603,19116,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_1266,37.0,Bac+2,0.3,M1802,11203,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_1761,32.0,Sans diplôme,0.9,K1403,2B149,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0435,62.0,Bac,1.1,K2101,80830,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1625,27.0,Bac+2,5.3,J1301,33400,,1,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1359,36.0,Sans diplôme,6.6,N4301,71228,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2193,18.0,Bac+5,0.1,W1401,62300,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",0
+ID_0997,52.0,Bac+2,2.6,K1903,73253,0.0,1,"Candidat très dynamique, mobilité nationale validée. Projet clair.",2
+ID_2074,21.0,Bac+5,2.4,J1301,38225,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0420,34.0,Bac+2,3.3,M1802,38256,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_0126,54.0,Bac+2,2.2,C1110,58040,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1403,54.0,Bac,3.4,N1303,46157,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0185,50.0,Bac+2,7.7,N1301,70136,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1791,50.0,Sans diplôme,6.0,G1302,52423,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_1917,29.0,Bac,2.0,N4101,55251,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1476,35.0,Sans diplôme,0.4,W1401,71410,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_0209,19.0,Bac,0.5,G1203,59292,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2485,24.0,Bac+5,1.3,K1304,05009,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_0008,40.0,Bac+5,18.3,N1303,54007,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_1571,57.0,Bac+2,2.1,N4101,32382,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1077,21.0,Bac+5,2.6,M1805,01054,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_1508,41.0,Bac+2,3.0,M1705,76502,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1954,22.0,Bac,7.6,K1201,2B315,0.0,1,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_1050,56.0,Bac+5,1.7,D1406,02576,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_2263,55.0,Bac,4.6,G1801,30209,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_1920,35.0,Sans diplôme,0.2,M1203,45059,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1589,34.0,Bac+2,1.6,K2106,27654,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0029,44.0,Bac,1.2,M1602,58220,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1947,23.0,Sans diplôme,0.5,K1201,10165,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1002,25.0,Bac,1.5,I1304,59387,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_2372,60.0,Bac,0.4,K1304,02616,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_2262,43.0,Sans diplôme,0.2,G1302,65320,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_2324,37.0,Bac,0.2,D1503,01030,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0847,53.0,Bac+2,1.7,N4301,52219,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_2030,46.0,Bac+2,5.6,H1504,45086,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0041,35.0,,4.9,A1301,61442,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_0673,41.0,Sans diplôme,4.0,M1607,80764,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0010,28.0,,1.3,N4301,33090,0.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0242,50.0,Bac+2,0.9,C1201,27190,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0761,47.0,Bac+5,1.7,K1304,80601,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_0069,53.0,Bac+2,0.1,M1805,33492,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_0566,22.0,Bac+5,4.4,D1502,57453,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1864,40.0,Bac,7.7,G1801,61404,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1722,46.0,,4.7,A1203,57076,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,2
+ID_0415,33.0,Bac+5,5.3,K2111,39162,0.0,1,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_2095,32.0,Bac,5.2,N1303,81139,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1315,42.0,,1.0,K1304,24263,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1202,18.0,Bac+5,1.0,F1603,02500,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2156,39.0,Bac+5,0.2,D1401,88010,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1540,52.0,Bac+5,22.0,I1304,59224,1.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0143,49.0,Bac,2.3,C1102,64029,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_2039,27.0,Bac,1.7,M1805,25187,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1849,24.0,Bac,5.7,K2101,11418,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",1
+ID_2481,55.0,Sans diplôme,4.9,A1501,51334,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",2
+ID_2144,38.0,Bac+2,4.2,M1806,16263,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2116,19.0,Sans diplôme,1.8,D1401,63263,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1285,34.0,Sans diplôme,4.8,G1302,09025,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1316,55.0,Bac+2,8.0,K1304,34305,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_0556,58.0,Bac+5,5.2,K2111,25618,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0284,42.0,Bac,0.9,K1903,62542,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0539,49.0,Bac,7.1,I1304,02124,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1419,24.0,Sans diplôme,5.4,G1602,25502,0.0,1,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_1304,28.0,Bac,8.6,H1206,32433,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_2240,49.0,Bac,1.7,J1301,91001,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1336,,Bac+2,1.8,I1304,71441,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0561,45.0,Bac,5.9,K1601,31498,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0818,46.0,Bac,1.9,J1506,65010,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_1056,54.0,Bac,1.7,A1401,27522,1.0,1,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_0404,61.0,Bac+2,1.9,M1607,60403,0.0,0,,2
+ID_1351,52.0,Bac,3.8,H1206,71015,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1275,39.0,Bac,1.8,A1202,47289,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1504,63.0,Bac+2,0.3,G1801,08035,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_1893,29.0,Bac+5,1.3,C1102,40101,1.0,1,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0294,50.0,Bac,0.7,K1304,63282,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0201,19.0,Bac,3.9,M1501,21588,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0139,59.0,Bac,0.1,D1503,34129,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0897,25.0,Bac,6.4,D1503,33546,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0414,57.0,Bac,1.9,C1201,40275,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_0386,40.0,Bac+2,0.4,A1202,80446,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0316,,Sans diplôme,0.8,D1210,78520,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_1675,34.0,Sans diplôme,3.1,K1903,38275,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_1416,49.0,Sans diplôme,2.9,C1501,77277,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0528,54.0,Bac+2,0.0,G1602,57730,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_2317,47.0,Sans diplôme,1.3,G1302,04121,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1830,51.0,Bac+2,2.4,C1201,21693,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_0625,56.0,Bac,0.8,K1304,02214,1.0,1,,2
+ID_1517,41.0,Sans diplôme,4.0,I1304,55008,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1433,35.0,Bac,2.0,N1303,05165,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_0227,26.0,Bac+5,2.0,D1401,76014,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_2053,18.0,Bac+5,1.8,G1602,22186,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0770,56.0,Bac+2,2.5,M1203,56101,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0053,52.0,Bac+2,8.4,D1503,58224,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,2
+ID_2319,29.0,Bac+5,2.5,C1110,28408,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0646,62.0,Bac+5,1.5,N1101,29165,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1339,60.0,Sans diplôme,1.9,N4301,05045,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1937,22.0,Bac,4.9,K1304,41266,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1260,28.0,Bac+2,0.9,H2502,59327,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_2022,40.0,Bac,1.3,A1501,89318,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2348,29.0,Sans diplôme,0.4,G1601,22112,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0547,47.0,Sans diplôme,1.2,A1203,08330,1.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_1617,55.0,Bac+2,1.8,M1805,61137,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2166,25.0,Bac+5,0.7,G1203,09267,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_0732,54.0,Bac,11.4,G1601,18153,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,2
+ID_1812,50.0,Bac,1.6,K1304,31449,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1414,62.0,Bac,5.0,N1303,88153,0.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,2
+ID_1345,28.0,Bac+5,10.8,G1601,19148,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1036,,Bac+5,1.9,G1601,01064,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_0966,23.0,Sans diplôme,1.5,H2502,46008,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1891,50.0,Bac,4.9,K1903,16136,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0705,50.0,Bac,3.4,H1504,10408,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1559,58.0,Sans diplôme,12.0,K1304,2B303,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_2311,22.0,Bac+5,9.3,G1602,60412,,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1112,21.0,Bac+5,2.8,A1203,66090,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_2245,30.0,Sans diplôme,0.7,H2502,76442,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0871,52.0,Bac,1.0,A1301,88006,1.0,1,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_1334,43.0,Bac,5.3,H1504,50054,,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_2034,39.0,,4.3,K1403,72125,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_0592,55.0,Bac+2,9.3,A1301,71013,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0418,,Bac+2,0.3,F1603,64363,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0829,18.0,Bac+2,0.8,M1705,01307,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0486,41.0,Bac+2,1.7,I1304,70550,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0347,35.0,Bac+2,3.1,K1903,51638,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_1885,20.0,Bac,0.2,A1203,36182,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2165,52.0,Bac+5,1.5,K2106,17397,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_2277,50.0,Bac+5,19.6,F1603,64529,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2108,55.0,Bac,2.3,H1206,21179,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1492,22.0,Bac,6.6,I1304,08307,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2322,29.0,Bac,2.5,M1801,47133,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_0938,55.0,Sans diplôme,3.4,N4301,42304,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1011,22.0,Sans diplôme,6.3,D1401,56096,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_1570,32.0,Bac+5,7.9,D1502,45160,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_2172,19.0,Bac+5,13.4,M1705,70251,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1889,,Sans diplôme,8.1,A1501,76299,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,2
+ID_1033,34.0,Bac+5,2.0,K1304,60227,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_0231,20.0,Bac+5,2.6,A1202,01302,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_0978,54.0,Sans diplôme,2.6,W1401,79090,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",2
+ID_0585,28.0,Bac+2,0.5,N1101,30088,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0168,47.0,Bac+5,1.6,M1602,29003,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0655,37.0,Bac,1.1,K2111,76259,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_1254,46.0,Bac,0.8,F1603,32047,1.0,1,,1
+ID_1912,51.0,Bac,0.5,K1903,34276,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0621,44.0,Bac+2,5.1,A1202,65376,1.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1352,51.0,Sans diplôme,0.9,C1201,17486,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0031,45.0,Bac+5,1.5,C1302,12290,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1863,29.0,Sans diplôme,1.4,W1401,21432,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_1532,43.0,Bac,3.2,N1303,40311,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1692,32.0,Bac,1.6,A1401,06047,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0115,40.0,Bac,2.2,K1304,77145,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1447,62.0,Bac,1.1,H1206,55155,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_2346,50.0,Bac,4.1,D1406,69075,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1993,31.0,Bac+5,0.3,C1501,80572,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0205,49.0,Bac+2,4.9,D1210,01058,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0329,47.0,Bac,0.7,C1201,83011,1.0,0,,0
+ID_0430,18.0,Bac+2,3.4,K1304,21058,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0973,30.0,Bac+2,1.9,K2106,52546,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0894,,Bac+2,2.6,K2111,68318,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0952,50.0,Bac,1.1,A1401,38426,1.0,0,,1
+ID_0611,24.0,Sans diplôme,6.6,M1602,09292,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2065,50.0,Bac+2,0.9,K1601,67165,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2295,39.0,Bac+2,0.9,A1202,51595,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_1349,56.0,Sans diplôme,3.4,K1601,78383,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_2268,63.0,Bac+5,5.6,K2111,19024,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1397,36.0,Bac,1.0,M1802,77152,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_1231,52.0,Bac+5,1.1,J1301,46155,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2217,36.0,Bac+2,0.2,M1203,14266,0.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_0320,45.0,Sans diplôme,0.4,C1302,63404,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",1
+ID_0342,38.0,Bac+2,2.6,H1206,68044,1.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",1
+ID_0527,27.0,Bac+2,5.3,M1806,50471,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",2
+ID_1956,57.0,Bac+5,0.3,G1601,80372,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",1
+ID_1795,28.0,Bac,0.5,H1206,31309,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1614,59.0,Bac+2,0.0,N1303,38020,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1119,,Bac+2,1.4,C1201,19120,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0575,62.0,Bac,1.5,K1403,44068,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_1842,49.0,Bac+5,1.6,K1304,81064,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_2325,20.0,Bac+2,6.4,M1705,58231,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_2107,61.0,,10.4,K1403,19166,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,2
+ID_1507,32.0,Sans diplôme,1.4,G1801,16364,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",1
+ID_0620,56.0,Bac,2.7,A1401,09103,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_2455,19.0,Bac+5,1.1,A1301,10259,1.0,1,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0369,46.0,Bac+2,6.3,N4101,24510,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1324,,Bac,5.2,H1504,42163,0.0,1,,1
+ID_1924,50.0,Bac+2,0.2,K1903,42205,1.0,0,,1
+ID_2382,52.0,Bac,1.6,K1601,65351,0.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,2
+ID_1624,59.0,Bac,3.0,K2111,76537,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0224,28.0,Bac,0.7,G1302,61225,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1845,25.0,Bac,2.5,N1303,47060,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_1475,30.0,Sans diplôme,0.5,D1503,51596,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0261,29.0,Bac,8.5,H2502,14550,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2209,25.0,Bac,1.6,A1203,41178,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0921,26.0,Bac,4.4,G1601,71106,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_0100,25.0,Bac+5,5.2,J1506,61362,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",0
+ID_1230,51.0,Bac+2,4.4,M1801,58208,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_1068,48.0,Bac,1.0,D1503,79132,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0451,22.0,Bac,12.2,A1203,45174,1.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_1839,26.0,Bac+2,0.7,M1805,09116,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0782,41.0,Bac+2,1.1,D1502,61037,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2355,62.0,Sans diplôme,4.9,K2111,36060,1.0,1,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_2394,32.0,Sans diplôme,2.0,K2106,52257,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,2
+ID_0213,23.0,Bac,2.2,M1801,21652,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_2098,24.0,Bac+5,1.0,C1110,57606,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_0961,53.0,Bac,0.6,H1206,51613,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2162,44.0,Sans diplôme,0.1,K1903,57126,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1545,34.0,Bac,7.4,C1302,33210,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2257,56.0,Bac,4.9,N4101,10103,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0544,42.0,Bac,0.2,N1301,14360,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0235,43.0,Bac,2.5,M1801,16284,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0742,62.0,Bac,11.1,A1203,43258,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0348,42.0,Bac,4.1,D1406,87034,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0858,41.0,Sans diplôme,1.4,C1501,88461,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0499,,Bac+5,0.1,H1206,81273,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1179,18.0,Bac+5,0.8,G1602,10409,1.0,1,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0252,48.0,Bac,2.7,I1304,43110,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_1486,61.0,Bac,3.4,W1401,55338,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0920,41.0,Bac+2,0.7,K1403,86249,0.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0090,42.0,Bac+5,1.4,G1601,79313,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0689,37.0,Bac,2.5,M1203,02355,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_1086,60.0,Bac,10.2,M1203,67292,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",2
+ID_2273,53.0,Bac,0.7,N4301,77085,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2216,41.0,Sans diplôme,5.0,G1302,53211,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0033,32.0,Bac+5,4.0,M1501,76493,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,0
+ID_1509,21.0,Bac,1.7,K2111,21552,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1877,35.0,Bac,4.6,J1506,57263,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1862,,Bac,11.3,C1201,58250,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_0428,29.0,Bac,0.1,N1101,24243,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0977,18.0,Bac,0.2,H2502,14270,,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_2279,58.0,Sans diplôme,5.4,H1206,02044,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,2
+ID_0492,54.0,Bac+2,3.8,G1801,70225,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_2456,28.0,Sans diplôme,1.8,C1110,07249,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_0059,19.0,Sans diplôme,3.0,G1203,53029,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_0218,55.0,Sans diplôme,0.4,K2111,37118,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0521,28.0,Bac,1.3,N1303,18183,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_1455,61.0,Bac+5,0.9,C1102,58200,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0530,41.0,Bac+2,0.8,C1501,77255,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1779,25.0,Bac+2,0.4,C1110,97420,0.0,1,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_0714,,Bac+2,1.0,K1201,62892,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_0273,50.0,Bac,2.6,G1302,62313,0.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,2
+ID_0477,21.0,Bac,0.0,D1502,55282,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,1
+ID_1985,29.0,Bac,0.6,A1202,39041,1.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2
+ID_1802,49.0,Bac+5,2.2,C1302,51098,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_2096,18.0,Sans diplôme,1.6,H2502,65068,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_1365,51.0,Sans diplôme,0.8,H1206,80742,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,2
+ID_1380,52.0,Bac+5,2.4,C1110,24398,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,2
+ID_0012,53.0,Bac,0.4,A1203,34106,0.0,1,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_0607,62.0,Sans diplôme,0.6,A1401,24032,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1533,58.0,Sans diplôme,1.6,M1607,58015,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,2
+ID_1337,63.0,Bac+2,0.2,K1201,27601,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0744,21.0,,1.3,M1607,29292,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,1
+ID_1973,18.0,Bac+5,3.7,F1603,45040,0.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_1663,54.0,Sans diplôme,7.8,N4101,86189,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1935,19.0,Bac,10.5,J1301,11290,0.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0873,42.0,Bac+5,7.8,C1501,89432,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_0660,,Bac+5,4.1,H1504,61361,0.0,0,"Candidat très dynamique, mobilité nationale validée. Projet clair.",0
+ID_0023,38.0,Bac+2,9.3,M1203,17451,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_0399,32.0,Bac,0.9,K1403,26086,1.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1992,37.0,,7.6,M1806,76004,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_1469,19.0,Sans diplôme,1.1,W1401,02259,0.0,1,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,2
+ID_2376,59.0,Bac+2,5.1,A1202,31412,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2402,31.0,Sans diplôme,0.3,M1801,78305,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,1
+ID_0901,59.0,Bac,0.4,F1603,57578,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_1362,34.0,Bac+2,0.2,N1301,64001,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_0724,34.0,Bac+5,2.2,C1501,24470,1.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_1671,44.0,,2.6,K2111,88078,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",1
+ID_2070,30.0,Bac+5,3.1,N1101,83071,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,0
+ID_0335,54.0,Bac+5,4.4,A1401,17137,1.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_1749,25.0,Bac+5,4.3,W1401,21631,1.0,1,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_2158,51.0,Bac,1.2,A1203,89181,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,1
+ID_2204,26.0,Bac+5,1.7,I1304,07275,1.0,0,Projet de reconversion à affiner. Besoin d'une formation complémentaire.,0
+ID_2033,22.0,Bac,2.5,K2101,51276,0.0,1,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,0
+ID_2143,62.0,Bac,1.6,N1301,02051,0.0,0,Problème ponctuel de mobilité géographique. Zone mal desservie.,1
+ID_2424,25.0,Bac,0.8,M1602,51174,0.0,1,"Profil autonome, recherche active, aucun frein périphérique identifié.",1
+ID_1101,43.0,Bac,3.5,N1303,56119,1.0,0,Compétences à réactualiser sur les outils numériques. Motivation correcte.,0
+ID_1480,56.0,Sans diplôme,0.5,K1601,61481,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_1214,40.0,Bac,0.2,K1304,16276,0.0,0,"Excellente présentation, compétences techniques à jour. Reprise rapide visée.",0
+ID_0360,59.0,Bac,9.4,A1301,64437,0.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",2
+ID_1518,28.0,Bac,0.9,C1201,91080,1.0,0,"Perte de confiance importante. Risque d'exclusion, barrière de la langue.",0
+ID_0654,36.0,Bac,0.4,K1304,11111,0.0,0,"Profil autonome, recherche active, aucun frein périphérique identifié.",0
+ID_2174,,Bac+2,0.2,M1705,27134,1.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_2477,54.0,Bac+2,0.3,A1501,13041,0.0,0,Freins périphériques majeurs. Situation d'illettrisme numérique constatée.,2
+ID_0517,58.0,Bac+2,14.5,N1303,26295,0.0,0,Cumul de difficultés. Pas de moyen de transport et garde d'enfants complexe.,2

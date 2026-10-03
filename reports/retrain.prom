@@ -1,0 +1,15 @@
+# HELP cisia_retrain_last_run_status_info Status label for the latest retrainer run
+# TYPE cisia_retrain_last_run_status_info gauge
+cisia_retrain_last_run_status_info{status="promoted"} 1
+# HELP cisia_retrain_last_run_new_feedbacks New validated feedbacks available to the run
+# TYPE cisia_retrain_last_run_new_feedbacks gauge
+cisia_retrain_last_run_new_feedbacks 1
+# HELP cisia_retrain_last_run_min_feedback Feedback threshold configured for the run
+# TYPE cisia_retrain_last_run_min_feedback gauge
+cisia_retrain_last_run_min_feedback 1
+# HELP cisia_retrain_candidate_trained 1 when a candidate model was actually trained
+# TYPE cisia_retrain_candidate_trained gauge
+cisia_retrain_candidate_trained 1
+# HELP cisia_retrain_last_run_timestamp_seconds Unix timestamp of the latest retrainer run
+# TYPE cisia_retrain_last_run_timestamp_seconds gauge
+cisia_retrain_last_run_timestamp_seconds 1790843744.73664

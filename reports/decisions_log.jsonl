@@ -1,0 +1,162 @@
+{
+    "candidate_metrics": 
+    {   
+        "accuracy": 0.668, 
+        "f1_classe_2": 0.5488372093023256, 
+        "f1_macro": 0.6503186586320879, 
+        "precision_classe_2": 0.472, 
+        "recall_classe_2": 0.6555555555555556, 
+        "roc_auc_ovr_macro": 0.8148626917627945
+    }, 
+    "production_metrics":  
+    {
+        "accuracy": 0.664, 
+        "f1_classe_2": 0.5395348837209303, 
+        "f1_macro": 0.6455483000470972, 
+        "precision_classe_2": 0.464, 
+        "recall_classe_2": 0.6444444444444445, 
+        "roc_auc_ovr_macro": 0.8153350194642108
+    }, 
+    "promote": true, 
+    "reason": "candidate accepted: f1_macro=+0.0048, recall_classe_2=+0.0111", 
+    "reference_set": "data/reference_set.csv", 
+    "timestamp": "2026-09-28T01:31:18.832737+00:00"
+}
+{
+"schema_version": "2.0", 
+"decision_id": "839621cd-e4ac-4fe5-bc05-1dd9759fbd99", 
+"timestamp_utc": "2026-09-28T08:47:11.179232+00:00",
+ "decision": {
+	 "status": "promoted", 
+	 "promote": true, 
+	 "reason": "candidate accepted: f1_macro=+0.0045, recall_classe_2=+0.0111"}, 
+ "candidate": {
+    "model_name": "cisia_emploi", 
+    "model_version": "candidate-20260928084701", 
+    "model_type": "xgboost", 
+    "artifact": "services/model/models/cisia_emploi_candidate.joblib", 
+    "artifact_sha256": "d046959fb649843b3e20300c80c48320b0821f441a0712f6054f10d799844f14", 
+    "promoted_artifact": "services/model/models/cisia_emploi_promoted.joblib", 
+    "mlflow_experiment": "cisia-emploi-retraining", 
+    "mlflow_run_id": "5233dff1f34f4e118fe01cd6cda5be11", 
+    "registry": 
+	{"name": "cisia-emploi", 
+    "alias": "challenger", 
+    "version": "2", 
+    "model_uri": "models:/cisia-emploi/2"
+	}, 
+    "hyperparameters": 
+    {
+	"objective": "multi:softprob", 
+    "num_class": 3, "n_estimators": 400, 
+    "learning_rate": 0.03, "max_depth": 3, 
+    "min_child_weight": 3, "subsample": 0.9, 
+	"colsample_bytree": 0.9, 
+    "tree_method": "hist", "eval_metric": "mlogloss", 
+	"random_state": 42, "n_jobs": -1, 
+    "verbosity": 0
+	}, 
+	"training_rows": 2001, 
+	"new_feedbacks": 1, 
+    "feedback_request_ids": ["f8fdf8c7-d385-4aa6-8ae6-9b9ecd8953c1"], 
+    "excluded_feedbacks_replaying_reference": 0
+    }, 
+"production": 
+	{"model_name": "cisia_emploi", 
+	"model_version": "v1.0.0", 
+	"model_type": "xgboost", 
+	"scenario": "multimodal_ethique", 
+	"config": "best_class_2_ethique", 
+	"artifact": "services/model/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib", 
+	"artifact_sha256": "2872860a90da90508a9abf6b13a872fec1b987aee417566431eb1b5c72dceefb", 
+	"trained_on_dataset_sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e", 
+	"mlflow_run_id": "15f3cf5eb0a04fa389777e34e7497b95", 
+	"registry": 
+    {"name": "cisia-emploi", "alias": "champion", "version": "1"}}, 
+"data": 
+    {"reference_set": "data/reference_set.csv", 
+	"reference_set_sha256": "fda40dc1f07a4784a0b012b80de94b9a9af2d5fd54425cd33d64aad2ec59c785", 
+	"training_dataset": "data/dataset_trajectoire_emploi.csv", 
+	"training_dataset_sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e", 
+	"excluded_reference_rows": 500
+    }, 
+"metrics": 
+	{
+        "evaluated_on": "reference_set", 
+    "candidate": 
+	    {
+            "accuracy": 0.668, 	
+            "f1_macro": 0.6500059770602866,    
+            "f1_classe_2": 0.5462962962962963,    
+            "recall_classe_2": 0.6555555555555556,     
+            "precision_classe_2": 0.46825396825396826,     
+            "roc_auc_ovr_macro": 0.8162200741557678
+        }, 
+	"production": 
+	    {
+            "accuracy": 0.664, 
+            "f1_macro": 0.6455483000470972, 
+            "f1_classe_2": 0.5395348837209303, 
+            "recall_classe_2": 0.6444444444444445, 
+            "precision_classe_2": 0.464, 
+            "roc_auc_ovr_macro": 0.8153350194642108
+        }, 
+    "delta_candidate_minus_production": 
+	    {
+            "accuracy": 0.0040000000000000036, 
+            "f1_macro": 0.004457677013189443, 
+            "f1_classe_2": 0.006761412575365999, 
+            "recall_classe_2": 0.011111111111111072, 
+            "precision_classe_2": 0.004253968253968232, 
+            "roc_auc_ovr_macro": 0.0008850546915569746
+        }
+    }, 
+"quality_gate": 
+	{
+		"status": "PASS", 
+		"passed": 9, 
+		"failed": 0, 
+		"rules": 
+		[
+	    {
+            "rule": "floor.f1_macro", "type": "quality_floor", 
+		    "metric": "f1_macro", "value": 0.6500059770602866, "threshold": 0.6, "comparison": ">=", "status": "PASS"
+        }, 
+	    {
+            "rule": "floor.f1_classe_2", "type": "quality_floor", 
+		    "metric": "f1_classe_2", "value": 0.5462962962962963, "threshold": 0.5, "comparison": ">=", "status": "PASS"
+        }, 
+	    {
+            "rule": "floor.recall_classe_2", "type": "quality_floor", 
+		    "metric": "recall_classe_2", "value": 0.6555555555555556, "threshold": 0.5, "comparison": ">=", "status": "PASS"
+        }, 
+	    {
+            "rule": "floor.roc_auc_ovr_macro", "type": "quality_floor", 
+		    "metric": "roc_auc_ovr_macro", "value": 0.8162200741557678, "threshold": 0.7, "comparison": ">=", "status": "PASS"
+        }, 
+	    {
+            "rule": "regression.f1_macro", "type": "max_regression_vs_production", 
+		    "metric": "f1_macro", "value": -0.004457677013189443, "threshold": 0.02, "comparison": "<=", "status": "PASS"
+        }, 
+	    {
+            "rule": "regression.f1_classe_2", "type": "max_regression_vs_production", 
+		    "metric": "f1_classe_2", "value": -0.006761412575365999, "threshold": 0.03, "comparison": "<=", "status": "PASS"
+        }, 
+	    {
+            "rule": "regression.recall_classe_2", "type": "max_regression_vs_production", 
+		    "metric": "recall_classe_2", "value": -0.011111111111111072, "threshold": 0.03, "comparison": "<=", "status": "PASS"
+        }, 
+	    {
+            "rule": "regression.roc_auc_ovr_macro", "type": "max_regression_vs_production", 
+		    "metric": "roc_auc_ovr_macro", "value": -0.0008850546915569746, "threshold": 0.02, "comparison": "<=", "status": "PASS"
+        }, 
+	    {
+            "rule": "improvement.any_of", "type": "minimum_gain_vs_production", 
+		    "metric": "f1_macro|recall_classe_2", "value": 0.011111111111111072, "threshold": 0.0, "comparison": ">", "status": "PASS", 
+		    "details": {"f1_macro": 0.004457677013189443, "recall_classe_2": 0.011111111111111072}
+        }
+		]
+    }
+}
+{"schema_version": "2.0", "decision_id": "4271f3b3-747a-4c1e-8637-d4e52e15ad8d", "timestamp_utc": "2026-09-28T23:02:16.267532+00:00", "decision": {"status": "promoted", "promote": true, "reason": "candidate accepted: f1_macro=+0.0045, recall_classe_2=+0.0111"}, "candidate": {"model_name": "cisia_emploi", "model_version": "candidate-20260928230201", "model_type": "xgboost", "artifact": "services/model/models/cisia_emploi_candidate.joblib", "artifact_sha256": "d8c2bc33a1afe8f4a387a83f2ab8826ee56bff312e8a455dae2446f7202719ed", "promoted_artifact": "services/model/models/cisia_emploi_promoted.joblib", "mlflow_experiment": "cisia-emploi-retraining", "mlflow_run_id": "a7a130b5e65b41dd95976615eb931065", "registry": {"name": "cisia-emploi", "alias": "challenger", "version": "3", "model_uri": "models:/cisia-emploi/3"}, "hyperparameters": {"objective": "multi:softprob", "num_class": 3, "n_estimators": 400, "learning_rate": 0.03, "max_depth": 3, "min_child_weight": 3, "subsample": 0.9, "colsample_bytree": 0.9, "tree_method": "hist", "eval_metric": "mlogloss", "random_state": 42, "n_jobs": -1, "verbosity": 0}, "training_rows": 2003, "new_feedbacks": 3, "feedback_request_ids": ["REQ00007", "REQ00006", "REQ00005"], "excluded_feedbacks_replaying_reference": 0}, "production": {"model_name": "cisia_emploi", "model_version": "v1.0.0", "model_type": "xgboost", "scenario": "multimodal_ethique", "config": "best_class_2_ethique", "artifact": "services/model/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib", "artifact_sha256": "2872860a90da90508a9abf6b13a872fec1b987aee417566431eb1b5c72dceefb", "trained_on_dataset_sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e", "mlflow_run_id": "15f3cf5eb0a04fa389777e34e7497b95", "registry": {"name": "cisia-emploi", "alias": "champion", "version": "1"}}, "data": {"reference_set": "data/reference_set.csv", "reference_set_sha256": "fda40dc1f07a4784a0b012b80de94b9a9af2d5fd54425cd33d64aad2ec59c785", "training_dataset": "data/dataset_trajectoire_emploi.csv", "training_dataset_sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e", "excluded_reference_rows": 500}, "metrics": {"evaluated_on": "reference_set", "candidate": {"accuracy": 0.668, "f1_macro": 0.6500059770602866, "f1_classe_2": 0.5462962962962963, "recall_classe_2": 0.6555555555555556, "precision_classe_2": 0.46825396825396826, "roc_auc_ovr_macro": 0.8156711341607741}, "production": {"accuracy": 0.664, "f1_macro": 0.6455483000470972, "f1_classe_2": 0.5395348837209303, "recall_classe_2": 0.6444444444444445, "precision_classe_2": 0.464, "roc_auc_ovr_macro": 0.8153350194642108}, "delta_candidate_minus_production": {"accuracy": 0.0040000000000000036, "f1_macro": 0.004457677013189443, "f1_classe_2": 0.006761412575365999, "recall_classe_2": 0.011111111111111072, "precision_classe_2": 0.004253968253968232, "roc_auc_ovr_macro": 0.00033611469656325}}, "quality_gate": {"status": "PASS", "passed": 9, "failed": 0, "rules": [{"rule": "floor.f1_macro", "type": "quality_floor", "metric": "f1_macro", "value": 0.6500059770602866, "threshold": 0.6, "comparison": ">=", "status": "PASS"}, {"rule": "floor.f1_classe_2", "type": "quality_floor", "metric": "f1_classe_2", "value": 0.5462962962962963, "threshold": 0.5, "comparison": ">=", "status": "PASS"}, {"rule": "floor.recall_classe_2", "type": "quality_floor", "metric": "recall_classe_2", "value": 0.6555555555555556, "threshold": 0.5, "comparison": ">=", "status": "PASS"}, {"rule": "floor.roc_auc_ovr_macro", "type": "quality_floor", "metric": "roc_auc_ovr_macro", "value": 0.8156711341607741, "threshold": 0.7, "comparison": ">=", "status": "PASS"}, {"rule": "regression.f1_macro", "type": "max_regression_vs_production", "metric": "f1_macro", "value": -0.004457677013189443, "threshold": 0.02, "comparison": "<=", "status": "PASS"}, {"rule": "regression.f1_classe_2", "type": "max_regression_vs_production", "metric": "f1_classe_2", "value": -0.006761412575365999, "threshold": 0.03, "comparison": "<=", "status": "PASS"}, {"rule": "regression.recall_classe_2", "type": "max_regression_vs_production", "metric": "recall_classe_2", "value": -0.011111111111111072, "threshold": 0.03, "comparison": "<=", "status": "PASS"}, {"rule": "regression.roc_auc_ovr_macro", "type": "max_regression_vs_production", "metric": "roc_auc_ovr_macro", "value": -0.00033611469656325, "threshold": 0.02, "comparison": "<=", "status": "PASS"}, {"rule": "improvement.any_of", "type": "minimum_gain_vs_production", "metric": "f1_macro|recall_classe_2", "value": 0.011111111111111072, "threshold": 0.0, "comparison": ">", "status": "PASS", "details": {"f1_macro": 0.004457677013189443, "recall_classe_2": 0.011111111111111072}}]}}
+{"schema_version": "2.0", "decision_id": "11c73947-7b02-4a7c-b885-3e012e96bff4", "timestamp_utc": "2026-09-29T00:48:05.247727+00:00", "decision": {"status": "promoted", "promote": true, "reason": "candidate accepted: f1_macro=+0.0028, recall_classe_2=+0.0111"}, "candidate": {"model_name": "cisia_emploi", "model_version": "candidate-20260929004759", "model_type": "xgboost", "artifact": "services/model/models/cisia_emploi_candidate.joblib", "artifact_sha256": "0cf2373a53117dbbacb7c0433dfa855154a62aa1b826642f152b674a63bccf1f", "promoted_artifact": "services/model/models/cisia_emploi_promoted.joblib", "mlflow_experiment": "cisia-emploi-retraining", "mlflow_run_id": "48bf216469c14992a13d1ccc2396fa1a", "registry": {"name": "cisia-emploi", "alias": "challenger", "version": "4", "model_uri": "models:/cisia-emploi/4"}, "hyperparameters": {"objective": "multi:softprob", "num_class": 3, "n_estimators": 400, "learning_rate": 0.03, "max_depth": 3, "min_child_weight": 3, "subsample": 0.9, "colsample_bytree": 0.9, "tree_method": "hist", "eval_metric": "mlogloss", "random_state": 42, "n_jobs": -1, "verbosity": 0}, "training_rows": 2001, "new_feedbacks": 1, "feedback_request_ids": ["REQ00008"], "excluded_feedbacks_replaying_reference": 0}, "production": {"model_name": "cisia_emploi", "model_version": "v1.0.0", "model_type": "xgboost", "scenario": "multimodal_ethique", "config": "best_class_2_ethique", "artifact": "services/model/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib", "artifact_sha256": "2872860a90da90508a9abf6b13a872fec1b987aee417566431eb1b5c72dceefb", "trained_on_dataset_sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e", "mlflow_run_id": "15f3cf5eb0a04fa389777e34e7497b95", "registry": {"name": "cisia-emploi", "alias": "champion", "version": "1"}}, "data": {"reference_set": "data/reference_set.csv", "reference_set_sha256": "fda40dc1f07a4784a0b012b80de94b9a9af2d5fd54425cd33d64aad2ec59c785", "training_dataset": "data/dataset_trajectoire_emploi.csv", "training_dataset_sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e", "excluded_reference_rows": 500}, "metrics": {"evaluated_on": "reference_set", "candidate": {"accuracy": 0.666, "f1_macro": 0.6483353245718837, "f1_classe_2": 0.5462962962962963, "recall_classe_2": 0.6555555555555556, "precision_classe_2": 0.46825396825396826, "roc_auc_ovr_macro": 0.8161539664374757}, "production": {"accuracy": 0.664, "f1_macro": 0.6455483000470972, "f1_classe_2": 0.5395348837209303, "recall_classe_2": 0.6444444444444445, "precision_classe_2": 0.464, "roc_auc_ovr_macro": 0.8153350194642108}, "delta_candidate_minus_production": {"accuracy": 0.0020000000000000018, "f1_macro": 0.002787024524786519, "f1_classe_2": 0.006761412575365999, "recall_classe_2": 0.011111111111111072, "precision_classe_2": 0.004253968253968232, "roc_auc_ovr_macro": 0.0008189469732649002}}, "quality_gate": {"status": "PASS", "passed": 9, "failed": 0, "rules": [{"rule": "floor.f1_macro", "type": "quality_floor", "metric": "f1_macro", "value": 0.6483353245718837, "threshold": 0.6, "comparison": ">=", "status": "PASS"}, {"rule": "floor.f1_classe_2", "type": "quality_floor", "metric": "f1_classe_2", "value": 0.5462962962962963, "threshold": 0.5, "comparison": ">=", "status": "PASS"}, {"rule": "floor.recall_classe_2", "type": "quality_floor", "metric": "recall_classe_2", "value": 0.6555555555555556, "threshold": 0.5, "comparison": ">=", "status": "PASS"}, {"rule": "floor.roc_auc_ovr_macro", "type": "quality_floor", "metric": "roc_auc_ovr_macro", "value": 0.8161539664374757, "threshold": 0.7, "comparison": ">=", "status": "PASS"}, {"rule": "regression.f1_macro", "type": "max_regression_vs_production", "metric": "f1_macro", "value": -0.002787024524786519, "threshold": 0.02, "comparison": "<=", "status": "PASS"}, {"rule": "regression.f1_classe_2", "type": "max_regression_vs_production", "metric": "f1_classe_2", "value": -0.006761412575365999, "threshold": 0.03, "comparison": "<=", "status": "PASS"}, {"rule": "regression.recall_classe_2", "type": "max_regression_vs_production", "metric": "recall_classe_2", "value": -0.011111111111111072, "threshold": 0.03, "comparison": "<=", "status": "PASS"}, {"rule": "regression.roc_auc_ovr_macro", "type": "max_regression_vs_production", "metric": "roc_auc_ovr_macro", "value": -0.0008189469732649002, "threshold": 0.02, "comparison": "<=", "status": "PASS"}, {"rule": "improvement.any_of", "type": "minimum_gain_vs_production", "metric": "f1_macro|recall_classe_2", "value": 0.011111111111111072, "threshold": 0.0, "comparison": ">", "status": "PASS", "details": {"f1_macro": 0.002787024524786519, "recall_classe_2": 0.011111111111111072}}]}}

@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Logs runtime
+logs/*.log
+logs/*.log.gz
+
+# MLflow tracking local (uploadé en artefact CI, pas committé)
+mlruns/
+
+# Runtime feedback database (contains production annotations)
+data/feedbacks.db
+retrain-result.json
+reports/retrain-result.json
+backups/
+
+# Holdout M1 complet (~6 k lignes) : source de travail, pas un livrable.
+# Seul le sous-échantillon que vous en tirez (data/reference_set.csv) est versionné.
+data/lending_club_holdout.csv
+
+# Secrets & config locale — JAMAIS committés
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+.idea/
+*.swp
