@@ -1,10 +1,10 @@
 {
   "model_name": "cisia_emploi",
-  "model_type": "logistic_regression",
-  "model_version": "v1.0.0",
-  "scenario_name": "multimodal_complet",
-  "config_name": "balanced",
-  "created_at_utc": "2026-10-04T22:08:53.930631+00:00",
+  "model_type": "xgboost",
+  "model_version": "v1.1.0-calibrated",
+  "scenario_name": "multimodal_ethique",
+  "config_name": "best_class_2_ethique",
+  "created_at_utc": "2026-10-04T20:22:20.823913+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -12,7 +12,7 @@
     "xgboost": "2.1.3"
   },
   "dataset": {
-    "path": "C:\\Users\\a895479\\projet\\certification\\data\\dataset_trajectoire_emploi.csv",
+    "path": "data/dataset_trajectoire_emploi.csv",
     "sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e",
     "total_rows": 2500,
     "train_rows": 2000,
@@ -2535,23 +2535,35 @@
     }
   },
   "scenario": {
-    "description": "Variables tabulaires, texte et variables sensibles.",
-    "include_sensitive": true,
+    "description": "Variables tabulaires et texte sans variables sensibles.",
+    "include_sensitive": false,
     "include_text": true,
     "text_only": false
   },
   "configuration": {
     "model_parameters": {
-      "solver": "lbfgs",
-      "max_iter": 1500,
-      "C": 1.0,
-      "class_weight": "balanced",
-      "random_state": 42
+      "objective": "multi:softprob",
+      "num_class": 3,
+      "colsample_bytree": 0.9,
+      "learning_rate": 0.03,
+      "max_depth": 3,
+      "min_child_weight": 3,
+      "n_estimators": 400,
+      "subsample": 0.9,
+      "tree_method": "hist",
+      "eval_metric": "mlogloss",
+      "random_state": 42,
+      "n_jobs": -1,
+      "verbosity": 0
     },
     "weighting": {
-      "method": "class_weight",
-      "configuration": "balanced",
-      "value": "balanced"
+      "method": "sample_weight",
+      "configuration": "best_class_2_ethique",
+      "value": {
+        "0": 1.0,
+        "1": 1.0,
+        "2": 2.5
+      }
     },
     "tfidf_min_df_final": 2
   },
@@ -2571,20 +2583,17 @@
     "categorical": [
       "code_rome_vise",
       "departement",
-      "est_allocataire",
-      "nationalite_hors_ue"
+      "est_allocataire"
     ],
     "text": [
       "synthese_entretien"
     ],
     "all_model_inputs": [
-      "age",
       "anciennete_poste_ans",
       "niveau_diplome",
       "code_rome_vise",
       "departement",
       "est_allocataire",
-      "nationalite_hors_ue",
       "synthese_entretien"
     ]
   },
@@ -2602,10 +2611,7 @@
     }
   },
   "training": {
-    "training_seconds": 0.1581939999887254,
-    "cpu_ms_1000_predictions": 10468.75,
-    "inference_measurement_dataset": "train_split_only",
-    "inference_samples": 100,
+    "training_seconds": 1.16699499997776,
     "trained_on": "train_split_only",
     "cross_validation": {
       "enabled": true,
@@ -2615,40 +2621,40 @@
       "random_state": 42,
       "metrics": {
         "accuracy": {
-          "mean": 0.681,
-          "std": 0.015378556499229678,
-          "min": 0.665,
-          "max": 0.705
+          "mean": 0.6735,
+          "std": 0.01750714140001161,
+          "min": 0.6575,
+          "max": 0.7025
         },
         "erreur_critique_2_vers_0": {
-          "mean": 0.14920091324200915,
-          "std": 0.01861714698691763,
-          "min": 0.125,
-          "max": 0.18055555555555555
+          "mean": 0.11594368340943681,
+          "std": 0.046743535904618126,
+          "min": 0.027777777777777776,
+          "max": 0.16666666666666666
         },
         "f1_class_2": {
-          "mean": 0.5737202855623907,
-          "std": 0.011202017531474736,
-          "min": 0.5590062111801242,
-          "max": 0.5847953216374269
+          "mean": 0.5706380153384762,
+          "std": 0.022609958724455665,
+          "min": 0.5396825396825397,
+          "max": 0.5934065934065934
         },
         "f1_macro": {
-          "mean": 0.6647494492023939,
-          "std": 0.013089022662138091,
-          "min": 0.6502056427019437,
-          "max": 0.686820710023501
+          "mean": 0.6595765438350699,
+          "std": 0.014507885276439529,
+          "min": 0.6471202871202871,
+          "max": 0.6860304498129506
         },
         "f1_weighted": {
-          "mean": 0.6842424740494092,
-          "std": 0.015701262734813187,
-          "min": 0.6688148927448231,
-          "max": 0.7100143578461312
+          "mean": 0.6799000332370516,
+          "std": 0.01815552680807422,
+          "min": 0.6616765271222067,
+          "max": 0.7107477987003825
         },
         "recall_classe_2": {
-          "mean": 0.6659436834094368,
-          "std": 0.03331438895094113,
-          "min": 0.6164383561643836,
-          "max": 0.7083333333333334
+          "mean": 0.7267503805175037,
+          "std": 0.057606429154657815,
+          "min": 0.6301369863013698,
+          "max": 0.8055555555555556
         }
       },
       "tfidf_min_df_used_by_fold": [
@@ -2659,14 +2665,40 @@
         2
       ]
     },
-    "evaluation_status": "not_evaluated",
+    "evaluation_status": "calibrated_holdout_evaluated",
     "evaluation_script": "src/evaluate.py",
     "holdout_used_during_training": false
   },
   "artifacts": {
-    "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_logistic_regression_multimodal_complet_balanced.joblib",
-    "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_logistic_regression_multimodal_complet_balanced.json",
-    "model_size_bytes": 9677,
-    "model_size_mb": 0.009229
+    "model_path": "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib",
+    "metadata_path": "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.json",
+    "model_size_bytes": 1278823,
+    "model_size_mb": 1.219581
+  },
+  "calibration": {
+    "method": "isotonic",
+    "estimator": "sklearn.calibration.CalibratedClassifierCV",
+    "cv": "prefit",
+    "source_pipeline": "models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibration_fit.joblib",
+    "fit_rows": 1600,
+    "calibration_rows": 400,
+    "random_state": 42
+  },
+  "decision_policy": {
+    "abstention_threshold": 0.55,
+    "class_2_escalation_threshold": 0.04
+  },
+  "evaluation": {
+    "dataset": "metadata holdout",
+    "metrics": {
+      "rows": 500,
+      "accuracy": 0.666,
+      "f1_macro": 0.6325738575709637,
+      "recall_class_2": 0.45555555555555555,
+      "critical_2_to_0_count_before_review": 14,
+      "confidence_abstention_rate": 0.304,
+      "human_review_rate": 0.416,
+      "human_review_count": 208
+    }
   }
 }

@@ -1,6 +1,10 @@
 # Dépendances pour les tests + l'évaluation continue (M5-B2)
 # Chaque service a son propre requirements.txt (services/*/requirements.txt).
 -r services/model/requirements.txt
+# Dépendances de développement utilisées par l'entraînement et le notebook.
+lightgbm==4.5.0
+shap==0.48.0
+geopandas==1.1.4
 pytest==8.3.3
 httpx==0.28.1
 mlflow==2.17.2

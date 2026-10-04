@@ -20,6 +20,7 @@ from fastapi import FastAPI, HTTPException, Request, status
 from loguru import logger
 from prometheus_fastapi_instrumentator import Instrumentator
 from sklearn.base import clone
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 from app.metrics import MODEL_INFO, observe_prediction
@@ -55,7 +56,10 @@ MODELS_DIR = Path(__file__).parent.parent / "models"
 MODEL_PATH = Path(
     os.environ.get(
         "MODEL_ARTIFACT",
-        str(MODELS_DIR / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"),
+        str(
+            MODELS_DIR
+            / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib"
+        ),
     )
 )
 META_PATH = MODEL_PATH.with_suffix(".json")
@@ -72,6 +76,9 @@ async def lifespan(app: FastAPI):
         model_name=app.state.metadata["model_name"],
         model_version=app.state.metadata["model_version"],
         scenario=app.state.metadata.get("scenario_name", "multimodal_ethique"),
+        calibration_method=app.state.metadata.get("calibration", {}).get(
+            "method", "none"
+        ),
     ).set(1)
     logger.info(
         "Model loaded: {name} {version}",
@@ -85,7 +92,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Retour-Emploi Model Service",
-    version="2.0.0",
+    version="2.1.0",
     description="Service interne de scoring Retour-Emploi.",
     lifespan=lifespan,
 )
@@ -120,6 +127,9 @@ async def info() -> InfoResponse:
         metrics_holdout=meta.get("evaluation", {}).get("metrics"),
         sklearn_version=meta.get("versions", {}).get("scikit_learn"),
         dataset_sha256=meta.get("dataset", {}).get("sha256"),
+        model_artifact=meta.get("artifacts", {}).get("model_path"),
+        calibration_method=meta.get("calibration", {}).get("method"),
+        decision_policy=meta.get("decision_policy"),
     )
 
 
@@ -130,8 +140,8 @@ async def predict(application: EmploymentApplication, request: Request) -> Predi
     try:
         X = pd.DataFrame([application.model_dump()])
         X = create_features(X)
-        pred = int(app.state.model.predict(X)[0])
         probabilities = app.state.model.predict_proba(X)[0]
+        pred = int(app.state.model.classes_[int(probabilities.argmax())])
     except Exception as exc:
         logger.bind(request_id=request_id).exception("Prediction failed")
         raise HTTPException(
@@ -180,7 +190,15 @@ async def train(request_data: TrainRequest, request: Request) -> TrainResponse:
         records = [record.model_dump() for record in request_data.records]
         frame = create_features(pd.DataFrame(records))
         target = frame.pop("classe_retour_emploi")
-        candidate = clone(app.state.model)
+        active_model = app.state.model
+        base_estimator = getattr(active_model, "estimator", active_model)
+        candidate = clone(base_estimator)
+        if base_estimator is not active_model:
+            candidate = CalibratedClassifierCV(
+                candidate,
+                method=active_model.method,
+                cv=3,
+            )
 
         mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI", "file:./mlruns"))
         mlflow.set_experiment(request_data.experiment_name)

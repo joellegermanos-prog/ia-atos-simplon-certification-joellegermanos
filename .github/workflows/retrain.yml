@@ -164,7 +164,7 @@ jobs:
             if ($artifactLine) {
               $previousArtifact = ($artifactLine -split '=', 2)[1].Trim().Trim('"')
             } else {
-              $previousArtifact = "/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
+              $previousArtifact = "/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib"
             }
 
             if ($previousArtifact -eq "/app/models/cisia_emploi_promoted.joblib") {
@@ -228,7 +228,7 @@ jobs:
             if (Test-Path -LiteralPath $envFile) {
               Copy-Item -LiteralPath $envFile -Destination $envBackupPath -Force
             } else {
-              "MODEL_ARTIFACT=/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib" |
+              "MODEL_ARTIFACT=/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib" |
                 Set-Content -LiteralPath $envBackupPath -Encoding utf8
             }
 
@@ -334,7 +334,7 @@ jobs:
                 $previousArtifact = if ($previousArtifactLine) {
                   ($previousArtifactLine -split '=', 2)[1].Trim().Trim('"')
                 } else {
-                  "/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
+                  "/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib"
                 }
                 if ($previousArtifact -eq "/app/models/cisia_emploi_promoted.joblib") {
                   if (-not (Test-Path -LiteralPath $modelBackupPath) -or

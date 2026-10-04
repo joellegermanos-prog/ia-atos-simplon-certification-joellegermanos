@@ -46,7 +46,7 @@
   <p id="usagerHistoryStatus" class="hint" role="status" aria-live="polite"></p>
   <div class="checkbox-row">
     <label class="checkbox-label" for="class_2_escalation_enabled">
-      <input type="checkbox" id="class_2_escalation_enabled" name="class_2_escalation_enabled" checked>
+      <input type="checkbox" id="class_2_escalation_enabled" name="class_2_escalation_enabled">
       Escalade classe 2 (P ≥ seuil)
     </label>
   </div>
@@ -237,7 +237,6 @@
         }
 
         class2EscalationThreshold = Number(policy.class_2_escalation_threshold);
-        class2EscalationToggle.checked = policy.class_2_escalation_available;
         class2EscalationToggle.disabled = !policy.class_2_escalation_available;
         scoreButton.disabled = false;
         if (class2EscalationToggle.disabled) {

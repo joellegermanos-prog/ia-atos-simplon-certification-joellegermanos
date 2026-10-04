@@ -6,6 +6,7 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 MODELS_DIR = Path(__file__).parent.parent / "models"
 sys.path.insert(0, str(MODELS_DIR.parent))
@@ -31,6 +32,22 @@ def test_health_returns_503_when_model_not_loaded(client):
     assert resp.status_code == 503
 
 
+def test_info_reports_calibrated_artifact_and_decision_policy(client):
+    response = client.get("/info")
+
+    assert response.status_code == 200
+    info = response.json()
+    assert info["model_version"] == "v1.1.0-calibrated"
+    assert info["model_artifact"].endswith("_calibrated.joblib")
+    assert info["calibration_method"] == "isotonic"
+    assert info["metrics_holdout"]["confidence_abstention_rate"] == 0.304
+    assert info["metrics_holdout"]["human_review_rate"] == 0.416
+    assert info["decision_policy"] == {
+        "abstention_threshold": 0.55,
+        "class_2_escalation_threshold": 0.04,
+    }
+
+
 def test_predict_valid_returns_class_and_proba(client, valid_payload):
     resp = client.post("/predict", json=valid_payload)
     assert resp.status_code == 200
@@ -53,7 +70,7 @@ def test_predict_internal_error_returns_500(client, valid_payload, monkeypatch):
     def fail_prediction(_features):
         raise RuntimeError("inference failed")
 
-    monkeypatch.setattr(client.app.state.model, "predict", fail_prediction)
+    monkeypatch.setattr(client.app.state.model, "predict_proba", fail_prediction)
 
     resp = client.post("/predict", json=valid_payload)
 
@@ -115,8 +132,9 @@ def test_train_internal_error_returns_500(client, valid_payload, monkeypatch, tm
     monkeypatch.delenv("TRAIN_API_TOKEN", raising=False)
     monkeypatch.setenv("ALLOW_DIRECT_TRAIN", "true")
     monkeypatch.setenv("MLFLOW_TRACKING_URI", f"file:{tmp_path / 'mlruns'}")
+    monkeypatch.setattr(client.app.state, "model", object())
 
-    class FailingCandidate:
+    class FailingCandidate(ClassifierMixin, BaseEstimator):
         def fit(self, features, target):
             raise RuntimeError("training failed")
 
@@ -137,15 +155,19 @@ def test_metrics_endpoint_exposes_prometheus(client, valid_payload):
     resp = client.get("/metrics")
     assert resp.status_code == 200
     assert "cisia_emploi_predictions_total" in resp.text
-    assert "cisia_model_info" in resp.text
+    assert (
+        'cisia_model_info{calibration_method="isotonic",model_name="cisia_emploi"'
+        in resp.text
+    )
 
 
 # --- Contract test du modèle (bloque la release en CI) ----------------------
 
 def test_model_contract_features_and_output():
-    """Le pipeline CISIA accepte le schéma emploi et sort trois probabilités."""
+    """Le pipeline calibré CISIA accepte le schéma emploi et sort trois probabilités."""
     model = joblib.load(
-        MODELS_DIR / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
+        MODELS_DIR
+        / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib"
     )
     row = {
         "niveau_diplome": "Bac+2",
@@ -159,6 +181,8 @@ def test_model_contract_features_and_output():
     }
     X = create_features(pd.DataFrame([row]))
     probabilities = model.predict_proba(X)[0]
-    assert int(model.predict(X)[0]) in (0, 1, 2)
+    prediction = int(model.classes_[int(probabilities.argmax())])
+    assert prediction in (0, 1, 2)
     assert len(probabilities) == 3
     assert abs(float(probabilities.sum()) - 1.0) < 0.001
+    assert hasattr(model, "calibrated_classifiers_")

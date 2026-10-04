@@ -12,4 +12,4 @@ cisia_retrain_last_run_min_feedback 1
 cisia_retrain_candidate_trained 1
 # HELP cisia_retrain_last_run_timestamp_seconds Unix timestamp of the latest retrainer run
 # TYPE cisia_retrain_last_run_timestamp_seconds gauge
-cisia_retrain_last_run_timestamp_seconds 1790843744.73664
+cisia_retrain_last_run_timestamp_seconds 1791148039.240987

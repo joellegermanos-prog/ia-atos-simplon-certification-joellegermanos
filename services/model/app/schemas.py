@@ -70,3 +70,6 @@ class InfoResponse(BaseModel):
     metrics_holdout: dict | None = None
     sklearn_version: str | None = None
     dataset_sha256: str | None = None
+    model_artifact: str | None = None
+    calibration_method: str | None = None
+    decision_policy: dict[str, float] | None = None

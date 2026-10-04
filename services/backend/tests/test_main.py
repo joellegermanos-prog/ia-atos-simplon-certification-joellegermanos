@@ -1,8 +1,12 @@
+import importlib
+import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 import httpx
+import joblib
+import pandas as pd
 import pytest
 
 for module_name in ("app.main", "app.middleware", "app.schemas", "app"):
@@ -12,6 +16,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from app import main as backend_main
 from app.main import app
 from fastapi.testclient import TestClient
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+MODEL_SERVICE_ROOT = REPO_ROOT / "services" / "model"
+if str(MODEL_SERVICE_ROOT) not in sys.path:
+    sys.path.insert(0, str(MODEL_SERVICE_ROOT))
+
+create_features = importlib.import_module("preprocess").create_features
 
 VALID_APPLICATION = {
     "niveau_diplome": "Bac+2",
@@ -66,6 +77,101 @@ def test_score_calls_model_and_returns_prediction(monkeypatch, tmp_path):
     assert {entry["request_id"] for entry in history.json()} == {"REQ00001", "REQ00002"}
     assert all(entry["needs_human_review"] for entry in history.json())
     assert "backend_abstentions_total" in client.get("/metrics").text
+
+
+def test_score_matches_notebook_decisions_on_calibrated_holdout(
+    monkeypatch, tmp_path
+):
+    model_path = (
+        MODEL_SERVICE_ROOT
+        / "models"
+        / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib"
+    )
+    metadata = json.loads(model_path.with_suffix(".json").read_text(encoding="utf-8"))
+    model = joblib.load(model_path)
+    dataset = pd.read_csv(
+        REPO_ROOT / "data" / "dataset_trajectoire_emploi.csv",
+        dtype={"code_rome_vise": "string", "code_insee_commune": "string"},
+    )
+    holdout = dataset.loc[metadata["dataset"]["test_indices"]]
+    notebook_decisions = {
+        293: 1,
+        1756: 0,
+        839: "à revoir",
+        1537: 2,
+    }
+
+    assert backend_main.ABSTENTION_THRESHOLD == 0.55
+    assert backend_main.CLASS_2_ESCALATION_THRESHOLD == 0.04
+    assert backend_main.ENABLE_CLASS_2_ESCALATION is True
+    assert set(notebook_decisions).issubset(set(holdout.index))
+
+    class_two_index = list(model.classes_).index(2)
+    examples = []
+    for index, expected_decision in notebook_decisions.items():
+        row = holdout.loc[index]
+        payload = {
+            "niveau_diplome": str(row["niveau_diplome"]),
+            "anciennete_poste_ans": float(row["anciennete_poste_ans"]),
+            "code_rome_vise": str(row["code_rome_vise"]),
+            "code_insee_commune": str(row["code_insee_commune"]),
+            "est_allocataire": int(row["est_allocataire"]),
+            "synthese_entretien": (
+                "" if pd.isna(row["synthese_entretien"]) else str(row["synthese_entretien"])
+            ),
+        }
+        probabilities = model.predict_proba(create_features(pd.DataFrame([payload])))[0]
+        prediction = int(model.classes_[int(probabilities.argmax())])
+        review = (
+            float(probabilities.max()) < 0.55
+            or (
+                prediction == 0
+                and float(probabilities[class_two_index]) >= 0.04
+            )
+        )
+        decision = "à revoir" if review else prediction
+        assert decision == expected_decision
+        examples.append((payload, expected_decision))
+
+    async def calibrated_model_post(self, url, json, headers=None):
+        assert url.endswith("/predict")
+        probabilities = model.predict_proba(
+            create_features(pd.DataFrame([json]))
+        )[0]
+        prediction = int(model.classes_[int(probabilities.argmax())])
+        return SimpleNamespace(
+            status_code=200,
+            json=lambda: {
+                "prediction": prediction,
+                "prediction_label": {
+                    0: "Retour rapide",
+                    1: "Retour moyen",
+                    2: "Risque de chômage longue durée",
+                }[prediction],
+                "probabilities": {
+                    str(class_index): round(float(value), 4)
+                    for class_index, value in enumerate(probabilities)
+                },
+                "model_version": metadata["model_version"],
+                "request_id": headers["X-Request-ID"],
+            },
+            text="ok",
+        )
+
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+    monkeypatch.setattr("httpx.AsyncClient.post", calibrated_model_post)
+    client = TestClient(app)
+
+    for payload, notebook_decision in examples:
+        response = client.post("/score", json=payload)
+
+        assert response.status_code == 200
+        result = response.json()
+        api_decision = (
+            "à revoir" if result["needs_human_review"] else result["prediction"]
+        )
+        assert api_decision == notebook_decision
+
 
 def test_score_persists_session_and_history(monkeypatch, tmp_path):
     monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))

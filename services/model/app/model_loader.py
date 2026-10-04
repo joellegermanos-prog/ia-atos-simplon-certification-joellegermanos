@@ -16,8 +16,8 @@ from typing import Any
 
 import joblib
 
-MODEL_FILENAME = "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
-METADATA_FILENAME = "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.json"
+MODEL_FILENAME = "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib"
+METADATA_FILENAME = "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.json"
 
 
 def load_model_and_metadata(models_dir: Path) -> tuple[Any, dict]:

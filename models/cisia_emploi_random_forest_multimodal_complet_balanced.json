@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "multimodal_complet",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-04T19:05:21.493507+00:00",
+  "created_at_utc": "2026-10-04T22:08:09.052892+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2602,8 +2602,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.8645701999776065,
-    "cpu_ms_1000_predictions": 65781.25,
+    "training_seconds": 0.807996000017738,
+    "cpu_ms_1000_predictions": 68750.0,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2666,7 +2666,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_multimodal_complet_balanced.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_random_forest_multimodal_complet_balanced.json",
-    "model_size_bytes": 4667516,
-    "model_size_mb": 4.45129
+    "model_size_bytes": 4667511,
+    "model_size_mb": 4.451285
   }
 }

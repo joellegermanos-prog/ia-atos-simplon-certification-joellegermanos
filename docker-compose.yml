@@ -30,7 +30,7 @@ services:
       - "8000:8000"
     environment:
       MLFLOW_TRACKING_URI: "${MLFLOW_TRACKING_URI:-http://mlflow:5000}"
-      MODEL_ARTIFACT: "${MODEL_ARTIFACT:-/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib}"
+      MODEL_ARTIFACT: "${MODEL_ARTIFACT:-/app/models/cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.joblib}"
       ALLOW_DIRECT_TRAIN: "${ALLOW_DIRECT_TRAIN:-false}"
     volumes:
       - ./mlruns:/app/mlruns

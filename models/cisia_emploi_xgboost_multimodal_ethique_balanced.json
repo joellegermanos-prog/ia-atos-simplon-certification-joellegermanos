@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "multimodal_ethique",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-04T19:07:01.867283+00:00",
+  "created_at_utc": "2026-10-04T22:10:07.282178+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2608,8 +2608,8 @@
     }
   },
   "training": {
-    "training_seconds": 2.1871276999881957,
-    "cpu_ms_1000_predictions": 61718.75,
+    "training_seconds": 2.8903441000147723,
+    "cpu_ms_1000_predictions": 53750.0,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2672,7 +2672,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_xgboost_multimodal_ethique_balanced.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_xgboost_multimodal_ethique_balanced.json",
-    "model_size_bytes": 630818,
-    "model_size_mb": 0.601595
+    "model_size_bytes": 630819,
+    "model_size_mb": 0.601596
   }
 }

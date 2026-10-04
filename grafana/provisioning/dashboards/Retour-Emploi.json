@@ -1137,7 +1137,7 @@
     {
       "id": 12,
       "type": "stat",
-      "title": "Modèle déployé",
+      "title": "Modèle déployé et calibration",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1153,7 +1153,7 @@
           "refId": "A",
           "expr": "cisia_model_info",
           "instant": true,
-          "legendFormat": "{{model_version}} - {{scenario}}",
+          "legendFormat": "{{model_version}} - {{scenario}} - calibration {{calibration_method}}",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"

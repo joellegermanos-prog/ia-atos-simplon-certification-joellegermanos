@@ -19,7 +19,7 @@ from prometheus_client import Counter, Gauge, Histogram
 MODEL_INFO = Gauge(
     "cisia_model_info",
     "Modele CISIA charge dans le service.",
-    labelnames=("model_name", "model_version", "scenario"),
+    labelnames=("model_name", "model_version", "scenario", "calibration_method"),
 )
 
 PREDICTIONS_TOTAL = Counter(
