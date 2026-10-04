@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "multimodal_complet",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-04T22:08:53.930631+00:00",
+  "created_at_utc": "2026-10-04T23:32:19.777120+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2602,8 +2602,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.1581939999887254,
-    "cpu_ms_1000_predictions": 10468.75,
+    "training_seconds": 0.4961905999807641,
+    "cpu_ms_1000_predictions": 17031.25,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2666,7 +2666,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_logistic_regression_multimodal_complet_balanced.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_logistic_regression_multimodal_complet_balanced.json",
-    "model_size_bytes": 9677,
-    "model_size_mb": 0.009229
+    "model_size_bytes": 9676,
+    "model_size_mb": 0.009228
   }
 }

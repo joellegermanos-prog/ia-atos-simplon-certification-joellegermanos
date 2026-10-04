@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "multimodal_complet",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-04T22:09:10.239627+00:00",
+  "created_at_utc": "2026-10-04T23:32:34.762733+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2609,8 +2609,8 @@
     }
   },
   "training": {
-    "training_seconds": 1.3948306000092998,
-    "cpu_ms_1000_predictions": 12187.5,
+    "training_seconds": 1.4029560000053607,
+    "cpu_ms_1000_predictions": 11406.25,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
@@ -2673,7 +2673,7 @@
   "artifacts": {
     "model_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_lightgbm_multimodal_complet_balanced.joblib",
     "metadata_path": "C:\\Users\\a895479\\projet\\certification\\models\\cisia_emploi_lightgbm_multimodal_complet_balanced.json",
-    "model_size_bytes": 1680560,
-    "model_size_mb": 1.602707
+    "model_size_bytes": 1680558,
+    "model_size_mb": 1.602705
   }
 }
