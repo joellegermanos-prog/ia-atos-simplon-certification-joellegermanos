@@ -1,8 +1,4 @@
-"""Détection de dérive — PSI, KS, Chi² (SQUELETTE À COMPLÉTER).
-
-Trois méthodes complémentaires. Mini-cours : `01_PSI_KS_Chi2_essentiel.md`.
-N'inventez pas vos métriques : PSI (formule ci-dessous), KS et Chi² sont dans
-scipy.stats.
+"""Détection de dérive — PSI, KS, Chi² 
 """
 from __future__ import annotations
 

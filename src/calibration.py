@@ -1,8 +1,4 @@
-"""Calibration en exploitation (SQUELETTE À COMPLÉTER).
-
-Le modèle annonce une proba : observe-t-on le bon taux réel ?
-Mini-cours : `03_Calibration_modele_essentiel.md`. ⚠️ Calibration =
-**exploitation** (≠ seuils de rejet de conception, vus en M7-M8).
+"""Calibration en exploitation .
 """
 from __future__ import annotations
 
