@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "tabulaire_seul",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-03T19:46:19.003092+00:00",
+  "created_at_utc": "2026-10-04T07:27:38.810783+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2612,8 +2612,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.9056942000170238,
-    "cpu_ms_1000_predictions": 9062.5,
+    "training_seconds": 0.7508952000061981,
+    "cpu_ms_1000_predictions": 6406.25,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",

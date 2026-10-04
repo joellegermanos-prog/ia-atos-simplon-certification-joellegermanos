@@ -24,6 +24,10 @@ class EmploymentApplication(BaseModel):
     synthese_entretien: str
 
 
+class ScoringApplication(EmploymentApplication):
+    class_2_escalation_enabled: bool = True
+
+
 class TrainingRecord(EmploymentApplication):
     classe_retour_emploi: Literal[0, 1, 2]
 
@@ -52,6 +56,7 @@ class Prediction(BaseModel):
     session_id: str | None = None
     needs_human_review: bool = False
     review_reasons: list[str] = Field(default_factory=list)
+    class_2_escalation_enabled: bool = True
 
 
 class Feedback(BaseModel):

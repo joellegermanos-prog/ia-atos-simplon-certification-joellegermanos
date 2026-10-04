@@ -126,6 +126,75 @@ def test_score_escalates_class_2_risk(monkeypatch, tmp_path):
     assert response.json()["review_reasons"] == ["class_2_risk"]
 
 
+def test_score_can_disable_class_2_escalation(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+    monkeypatch.setattr(backend_main, "ENABLE_CLASS_2_ESCALATION", True)
+
+    async def fake_post(self, url, json, headers=None):
+        assert "class_2_escalation_enabled" not in json
+        return SimpleNamespace(
+            status_code=200,
+            json=lambda: {
+                "prediction": 0,
+                "prediction_label": "Retour rapide",
+                "probabilities": {"0": 0.80, "1": 0.15, "2": 0.05},
+                "model_version": "v1.2.3",
+                "request_id": headers["X-Request-ID"],
+            },
+            text="ok",
+        )
+
+    monkeypatch.setattr("httpx.AsyncClient.post", fake_post)
+    response = TestClient(app).post(
+        "/score",
+        json={**VALID_APPLICATION, "class_2_escalation_enabled": False},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["needs_human_review"] is False
+    assert response.json()["review_reasons"] == []
+    assert response.json()["class_2_escalation_enabled"] is False
+
+
+def test_server_policy_can_disable_class_2_escalation(monkeypatch):
+    monkeypatch.setattr(backend_main, "ENABLE_CLASS_2_ESCALATION", False)
+
+    response = TestClient(app).get("/policy")
+
+    assert response.status_code == 200
+    assert response.json()["class_2_escalation_available"] is False
+    assert response.json()["class_2_escalation_threshold"] == 0.04
+
+
+def test_server_policy_overrides_client_escalation_choice(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+    monkeypatch.setattr(backend_main, "ENABLE_CLASS_2_ESCALATION", False)
+
+    async def fake_post(self, url, json, headers=None):
+        return SimpleNamespace(
+            status_code=200,
+            json=lambda: {
+                "prediction": 0,
+                "prediction_label": "Retour rapide",
+                "probabilities": {"0": 0.80, "1": 0.15, "2": 0.05},
+                "model_version": "v1.2.3",
+                "request_id": headers["X-Request-ID"],
+            },
+            text="ok",
+        )
+
+    monkeypatch.setattr("httpx.AsyncClient.post", fake_post)
+    response = TestClient(app).post(
+        "/score",
+        json={**VALID_APPLICATION, "class_2_escalation_enabled": True},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["class_2_escalation_enabled"] is False
+    assert response.json()["needs_human_review"] is False
+    assert response.json()["review_reasons"] == []
+
+
 def test_score_at_confidence_threshold_is_not_abstained(monkeypatch, tmp_path):
     monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
 
@@ -247,6 +316,41 @@ def test_user_registry_unavailable_returns_503(monkeypatch):
     assert response.status_code == 503
 
 
+def test_usager_check_returns_previous_inference_count(monkeypatch, tmp_path):
+    import sqlite3
+
+    db_path = tmp_path / "feedbacks.db"
+    monkeypatch.setenv("FEEDBACK_DB", str(db_path))
+    backend_main._init_feedback_db()
+    with sqlite3.connect(db_path) as connection:
+        connection.executemany(
+            """INSERT INTO predictions
+            (request_id, usager_id, input_json, prediction, probabilities_json,
+             model_version, created_at)
+            VALUES (?, ?, '{}', 0, '{}', 'test', 'now')""",
+            [("previous-1", "user-123"), ("previous-2", "user-123")],
+        )
+
+    response = TestClient(app).get("/usagers/check?usager_id=%20user-123%20")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "usager_id": "user-123",
+        "already_scored": True,
+        "previous_inferences": 2,
+    }
+
+
+def test_usager_check_allows_new_usager(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+
+    response = TestClient(app).get("/usagers/check?usager_id=new-user")
+
+    assert response.status_code == 200
+    assert response.json()["already_scored"] is False
+    assert response.json()["previous_inferences"] == 0
+
+
 @pytest.mark.parametrize("failure", ["upstream_status", "invalid_json", "schema_mismatch"])
 def test_train_model_response_failures_return_502(monkeypatch, failure):
     def response_json():
@@ -307,6 +411,96 @@ def _register_prediction(request_id: str = "req-feedback") -> None:
             VALUES (?, '{}', 1, '{"0": 0.2, "1": 0.8, "2": 0.0}', 'test', 'now')""",
             (request_id,),
         )
+
+
+def test_pending_prediction_update_rescores_and_preserves_request_id(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+    _register_prediction("req-edit")
+    sent_payload = {}
+
+    async def fake_post(self, url, json, headers=None):
+        sent_payload.update(json)
+        return SimpleNamespace(
+            status_code=200,
+            json=lambda: {
+                "prediction": 2,
+                "prediction_label": "Risque de chômage longue durée",
+                "probabilities": {"0": 0.1, "1": 0.2, "2": 0.7},
+                "model_version": "v-edited",
+                "request_id": headers["X-Request-ID"],
+            },
+            text="ok",
+        )
+
+    monkeypatch.setattr("httpx.AsyncClient.post", fake_post)
+    response = TestClient(app).put(
+        "/predictions/req-edit",
+        json={
+            **VALID_APPLICATION,
+            "usager_id": "user-edited",
+            "session_id": "session-edit",
+            "synthese_entretien": "Informations corrigées avant annotation.",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["request_id"] == "req-edit"
+    assert response.json()["prediction"] == 2
+    assert "usager_id" not in sent_payload
+
+    history = TestClient(app).get("/history?usager_id=user-edited")
+    assert history.status_code == 200
+    assert history.json()[0]["request_id"] == "req-edit"
+    assert history.json()[0]["prediction"] == 2
+    assert history.json()[0]["inputs"]["synthese_entretien"] == (
+        "Informations corrigées avant annotation."
+    )
+
+
+def test_pending_prediction_can_be_deleted(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEEDBACK_DB", str(tmp_path / "feedbacks.db"))
+    _register_prediction("req-delete")
+
+    response = TestClient(app).delete("/predictions/req-delete")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "deleted", "request_id": "req-delete"}
+    assert TestClient(app).get("/history?limit=200").json() == []
+
+
+@pytest.mark.parametrize("method", ["put", "delete"])
+def test_prediction_mutations_reject_feedback(monkeypatch, tmp_path, method):
+    import sqlite3
+
+    db_path = tmp_path / "feedbacks.db"
+    monkeypatch.setenv("FEEDBACK_DB", str(db_path))
+    _register_prediction("req-locked")
+    with sqlite3.connect(db_path) as connection:
+        connection.execute(
+            """INSERT INTO feedbacks
+            (request_id, prediction, true_label, created_at)
+            VALUES (?, 1, 1, 'now')""",
+            ("req-locked",),
+        )
+
+    client = TestClient(app)
+    if method == "put":
+        response = client.put("/predictions/req-locked", json=VALID_APPLICATION)
+    else:
+        response = client.delete("/predictions/req-locked")
+
+    assert response.status_code == 409
+
+
+@pytest.mark.parametrize("method", ["put", "delete"])
+def test_prediction_mutations_reject_unknown_request_id(method):
+    client = TestClient(app)
+    if method == "put":
+        response = client.put("/predictions/not-found", json=VALID_APPLICATION)
+    else:
+        response = client.delete("/predictions/not-found")
+
+    assert response.status_code == 404
 
 
 def test_feedback_requires_known_prediction():

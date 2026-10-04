@@ -48,9 +48,6 @@ from time import perf_counter, process_time
 from typing import Any
 
 import joblib
-import matplotlib
-
-matplotlib.use("Agg")  # script headless : uniquement plt.savefig, jamais plt.show()
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd

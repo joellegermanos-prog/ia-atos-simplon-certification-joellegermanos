@@ -28,10 +28,10 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.middleware import LoggingMiddleware
 from app.registry import UserRegistryClient, UserRegistryError
 from app.schemas import (
-    EmploymentApplication,
     Feedback,
     HealthResponse,
     Prediction,
+    ScoringApplication,
     TrainRequest,
     TrainResponse,
 )
@@ -41,6 +41,9 @@ MODEL_URL = os.environ.get("MODEL_URL", "http://model:8000")
 RETRAINER_URL = os.environ.get("RETRAINER_URL", "http://retrainer:8002")
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:8088").split(",")
 ABSTENTION_THRESHOLD = float(os.environ.get("ABSTENTION_THRESHOLD", "0.55"))
+ENABLE_CLASS_2_ESCALATION = os.environ.get(
+    "ENABLE_CLASS_2_ESCALATION", "true"
+).strip().lower() in {"1", "true", "yes", "on"}
 CLASS_2_ESCALATION_THRESHOLD = float(
     os.environ.get("CLASS_2_ESCALATION_THRESHOLD", "0.04")
 )
@@ -272,53 +275,78 @@ async def health() -> HealthResponse:
     return HealthResponse(status="ok")
 
 
+@app.get("/policy")
+async def policy() -> dict[str, bool | float]:
+    """Expose server-side availability and threshold for the UI toggle."""
+    return {
+        "class_2_escalation_available": ENABLE_CLASS_2_ESCALATION,
+        "class_2_escalation_threshold": CLASS_2_ESCALATION_THRESHOLD,
+    }
+
+
+@app.get("/usagers/check")
+async def check_usager_history(
+    usager_id: str = Query(..., min_length=1, max_length=100),
+) -> dict[str, str | bool | int]:
+    """Report prior local scoring history without preventing another score."""
+    normalized_id = usager_id.strip()
+    if not normalized_id:
+        raise HTTPException(status_code=422, detail="usager_id must not be blank")
+
+    _init_feedback_db()
+    with sqlite3.connect(_feedback_db_path()) as connection:
+        count = connection.execute(
+            "SELECT COUNT(*) FROM predictions WHERE usager_id = ?",
+            (normalized_id,),
+        ).fetchone()[0]
+    return {
+        "usager_id": normalized_id,
+        "already_scored": count > 0,
+        "previous_inferences": int(count),
+    }
+
+
 def _human_review_reasons(
     predicted_class: int,
     probabilities: dict[str, float],
+    class_2_escalation_enabled: bool,
 ) -> list[str]:
     reasons = []
     max_probability = max(float(value) for value in probabilities.values())
     class_2_probability = float(probabilities.get("2", 0.0))
     if max_probability < ABSTENTION_THRESHOLD:
         reasons.append("low_confidence")
-    if predicted_class == 0 and class_2_probability >= CLASS_2_ESCALATION_THRESHOLD:
+    if (
+        ENABLE_CLASS_2_ESCALATION
+        and class_2_escalation_enabled
+        and predicted_class == 0
+        and class_2_probability >= CLASS_2_ESCALATION_THRESHOLD
+    ):
         reasons.append("class_2_risk")
     return reasons
 
 
 
-# TODO 2 — route POST /score :
-#   - reçoit une EmploymentApplication (validée par Pydantic),
-#   - appelle MODEL_URL/predict en interne (httpx async),
-#   - propage le header X-Request-ID,
-#   - gère les erreurs : model injoignable → 503, model en erreur → 502,
-#   - retourne un objet Prediction.
-#
-# @app.post("/score", response_model=Prediction)
-# async def score(application: EmploymentApplication, request: Request) -> Prediction:
-#     ...
-@app.post("/score", response_model=Prediction, status_code=status.HTTP_200_OK)
-async def score(application: EmploymentApplication, request: Request) -> Prediction:
-    """Valide la demande, l'envoie au modèle et renvoie le résultat."""
-    trace_id = getattr(request.state, "request_id", request.headers.get("X-Request-ID", "n/a"))
-    session_id = application.session_id or request.headers.get("X-Session-ID") or str(uuid4())
-
-    if application.usager_id and os.environ.get("USER_REGISTRY_URL"):
-        try:
-            await UserRegistryClient().ensure_user_exists(application.usager_id)
-        except UserRegistryError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=f"User registry unavailable: {exc}",
-            ) from exc
-
-    request_id = _next_request_id()
+async def _run_model_prediction(
+    application: ScoringApplication,
+    request_id: str,
+    trace_id: str,
+    session_id: str,
+    usager_id: str | None,
+) -> Prediction:
+    """Run model inference and apply backend review rules."""
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             with MODEL_CALL_DURATION_SECONDS.time():
                 response = await client.post(
                     f"{MODEL_URL.rstrip('/')}/predict",
-                    json=application.model_dump(exclude={"usager_id", "session_id"}),
+                    json=application.model_dump(
+                        exclude={
+                            "usager_id",
+                            "session_id",
+                            "class_2_escalation_enabled",
+                        }
+                    ),
                     headers={"X-Request-ID": trace_id, "X-Session-ID": session_id},
                 )
     except httpx.RequestError as exc:
@@ -345,7 +373,7 @@ async def score(application: EmploymentApplication, request: Request) -> Predict
         ) from exc
 
     payload["request_id"] = request_id
-    payload["usager_id"] = application.usager_id
+    payload["usager_id"] = usager_id
     payload["session_id"] = session_id
 
     try:
@@ -360,9 +388,13 @@ async def score(application: EmploymentApplication, request: Request) -> Predict
     review_reasons = _human_review_reasons(
         prediction.prediction,
         prediction.probabilities,
+        application.class_2_escalation_enabled,
     )
     prediction.needs_human_review = bool(review_reasons)
     prediction.review_reasons = review_reasons
+    prediction.class_2_escalation_enabled = (
+        ENABLE_CLASS_2_ESCALATION and application.class_2_escalation_enabled
+    )
     BACKEND_PREDICTIONS_TOTAL.labels(
         predicted_class=str(prediction.prediction),
         model_version=prediction.model_version,
@@ -378,6 +410,59 @@ async def score(application: EmploymentApplication, request: Request) -> Predict
     BACKEND_PREDICTION_PROBA.observe(
         prediction.probabilities[str(prediction.prediction)]
     )
+    return prediction
+
+
+def _ensure_prediction_is_pending(
+    connection: sqlite3.Connection,
+    request_id: str,
+) -> tuple[str | None, str | None]:
+    row = connection.execute(
+        "SELECT usager_id, session_id FROM predictions WHERE request_id = ?",
+        (request_id,),
+    ).fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Unknown request_id")
+    if connection.execute(
+        "SELECT 1 FROM feedbacks WHERE request_id = ?", (request_id,)
+    ).fetchone():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Prediction already has feedback and cannot be changed",
+        )
+    return row[0], row[1]
+
+
+async def _validate_user_in_registry(usager_id: str | None) -> None:
+    if usager_id and os.environ.get("USER_REGISTRY_URL"):
+        try:
+            await UserRegistryClient().ensure_user_exists(usager_id)
+        except UserRegistryError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"User registry unavailable: {exc}",
+            ) from exc
+
+
+def _prediction_input_json(application: ScoringApplication) -> str:
+    return json.dumps(
+        application.model_dump(exclude=HISTORY_EXCLUDED_INPUT_FIELDS),
+        ensure_ascii=False,
+    )
+
+
+@app.post("/score", response_model=Prediction, status_code=status.HTTP_200_OK)
+async def score(application: ScoringApplication, request: Request) -> Prediction:
+    """Validate, score and persist a new prediction."""
+    trace_id = getattr(request.state, "request_id", request.headers.get("X-Request-ID", "n/a"))
+    session_id = application.session_id or request.headers.get("X-Session-ID") or str(uuid4())
+    usager_id = application.usager_id.strip() if application.usager_id else None
+    await _validate_user_in_registry(usager_id)
+
+    request_id = _next_request_id()
+    prediction = await _run_model_prediction(
+        application, request_id, trace_id, session_id, usager_id
+    )
     _init_feedback_db()
     with sqlite3.connect(_feedback_db_path()) as connection:
         connection.execute(
@@ -388,21 +473,76 @@ async def score(application: EmploymentApplication, request: Request) -> Predict
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 prediction.request_id,
-                application.usager_id,
+                usager_id,
                 session_id,
-                json.dumps(
-                    application.model_dump(exclude=HISTORY_EXCLUDED_INPUT_FIELDS),
-                    ensure_ascii=False,
-                ),
+                _prediction_input_json(application),
                 prediction.prediction,
                 json.dumps(prediction.probabilities),
                 prediction.model_version,
                 datetime.now(timezone.utc).isoformat(),
                 int(prediction.needs_human_review),
-                json.dumps(review_reasons),
+                json.dumps(prediction.review_reasons),
             ),
         )
     return prediction
+
+
+@app.put("/predictions/{request_id}", response_model=Prediction)
+async def update_pending_prediction(
+    request_id: str,
+    application: ScoringApplication,
+    request: Request,
+) -> Prediction:
+    """Update input fields and rescore a prediction that has no feedback."""
+    _init_feedback_db()
+    with sqlite3.connect(_feedback_db_path()) as connection:
+        _, previous_session_id = _ensure_prediction_is_pending(connection, request_id)
+
+    trace_id = getattr(request.state, "request_id", request.headers.get("X-Request-ID", "n/a"))
+    session_id = application.session_id or previous_session_id or str(uuid4())
+    usager_id = application.usager_id.strip() if application.usager_id else None
+    await _validate_user_in_registry(usager_id)
+    prediction = await _run_model_prediction(
+        application, request_id, trace_id, session_id, usager_id
+    )
+
+    with sqlite3.connect(_feedback_db_path()) as connection:
+        connection.execute("BEGIN IMMEDIATE")
+        _ensure_prediction_is_pending(connection, request_id)
+        connection.execute(
+            """UPDATE predictions SET
+                usager_id = ?, session_id = ?, input_json = ?, prediction = ?,
+                probabilities_json = ?, model_version = ?, created_at = ?,
+                needs_human_review = ?, review_reasons_json = ?
+            WHERE request_id = ?""",
+            (
+                usager_id,
+                session_id,
+                _prediction_input_json(application),
+                prediction.prediction,
+                json.dumps(prediction.probabilities),
+                prediction.model_version,
+                datetime.now(timezone.utc).isoformat(),
+                int(prediction.needs_human_review),
+                json.dumps(prediction.review_reasons),
+                request_id,
+            ),
+        )
+    return prediction
+
+
+@app.delete("/predictions/{request_id}", status_code=status.HTTP_200_OK)
+async def delete_pending_prediction(request_id: str) -> dict[str, str]:
+    """Delete a prediction only while it has no counselor feedback."""
+    _init_feedback_db()
+    with sqlite3.connect(_feedback_db_path()) as connection:
+        connection.execute("BEGIN IMMEDIATE")
+        _ensure_prediction_is_pending(connection, request_id)
+        connection.execute(
+            "DELETE FROM predictions WHERE request_id = ?",
+            (request_id,),
+        )
+    return {"status": "deleted", "request_id": request_id}
 
 
 @app.get("/history")

@@ -1,6 +1,6 @@
 {
   "status": "completed",
-  "evaluated_at_utc": "2026-10-03T19:58:25.477950+00:00",
+  "evaluated_at_utc": "2026-10-04T07:36:46.990472+00:00",
   "model_name": "cisia_emploi",
   "model_type": "xgboost",
   "scenario_name": "multimodal_ethique",
@@ -12,12 +12,12 @@
     "sha256": "2b9cb8c813b5f97540f0130b5e1cae2bad7ce5cbc1f57ffce51f54b498a7b34e"
   },
   "metrics": {
-    "latency_mean_ms": 21.361903998767957,
-    "latency_median_ms": 18.664200004423037,
-    "latency_p95_ms": 35.350854982971214,
-    "cpu_mean_ms": 92.5,
-    "cpu_p95_ms": 171.875,
-    "cpu_ms_1000_predictions": 92500.0,
+    "latency_mean_ms": 8.807006001588888,
+    "latency_median_ms": 8.601650013588369,
+    "latency_p95_ms": 10.224265007127542,
+    "cpu_mean_ms": 45.46875,
+    "cpu_p95_ms": 109.375,
+    "cpu_ms_1000_predictions": 45468.75,
     "latency_samples": 100,
     "accuracy": 0.664,
     "f1_macro": 0.6455483000470972,

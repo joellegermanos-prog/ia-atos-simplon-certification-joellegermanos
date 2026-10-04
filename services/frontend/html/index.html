@@ -13,6 +13,9 @@
     .checkbox-label { display: flex; align-items: center; gap: .5rem; margin: 0; }
     .checkbox-label input { width: auto; }
     .hint { color: #57606a; font-size: .8rem; }
+    .lookup-new { color: #137333; }
+    .lookup-duplicate { color: #8a4b08; }
+    .lookup-error { color: #b42318; }
     button { margin-top: 1rem; padding: .7rem 1.2rem; font-size: 1rem; cursor: pointer; }
     #result { margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none; }
     #feedbackPanel { width: min(520px, 92vw); padding: 1.2rem; border: 1px solid #d0d7de; border-radius: 8px; }
@@ -24,6 +27,8 @@
     table { width: 100%; border-collapse: collapse; font-size: .85rem; }
     th, td { border: 1px solid #d0d7de; padding: .45rem; text-align: left; white-space: nowrap; }
     td.long-text { white-space: normal; min-width: 260px; }
+    .row-actions { display: flex; gap: .35rem; }
+    .row-action { margin: 0; padding: .35rem .5rem; font-size: .8rem; }
     #historyScope { width: auto; margin-bottom: .6rem; }
     .link-button { margin: 0; padding: 0; font: inherit; font-family: monospace; color: #0969da; background: none; border: none; text-decoration: underline; cursor: pointer; }
     tr.selected { background: #fff8c5; }
@@ -36,9 +41,18 @@
   <h1>Orientation vers le retour a l'emploi</h1>
   <p>Évaluez le délai probable de retour à l'emploi.</p>
 
-  <label for="usager_id">Identifiant usager</label>
-  <input type="text" id="usager_id" name="usager_id" maxlength="100" value="Joelle" placeholder="Identifiant du référentiel national" required>
-  <p id="sessionInfo" aria-live="polite"></p>
+  <label for="usager_id">Usager</label>
+  <input type="text" id="usager_id" name="usager_id" maxlength="100" value="USAGER" placeholder="Identifiant du référentiel national" required>
+  <p id="usagerHistoryStatus" class="hint" role="status" aria-live="polite"></p>
+  <div class="checkbox-row">
+    <label class="checkbox-label" for="class_2_escalation_enabled">
+      <input type="checkbox" id="class_2_escalation_enabled" name="class_2_escalation_enabled" checked>
+      Escalade classe 2 (P ≥ seuil)
+    </label>
+  </div>
+  <p id="class2EscalationHint" class="hint" role="status" aria-live="polite">
+    Chargement de la politique d'escalade...
+  </p>
 
   <form id="scoreForm">
     <label for="niveau_diplome">Niveau de diplôme</label>
@@ -54,16 +68,62 @@
 
     <label for="code_rome_vise">Code ROME visé</label>
     <select id="code_rome_vise" name="code_rome_vise" required>
-      <option value="M1805" selected>M1805 - Études et développement informatique</option>
-      <option value="M1806">M1806 - Conseil et maîtrise d'ouvrage en systèmes d'information</option>
-      <option value="M1802">M1802 - Expertise et support en systèmes d'information</option>
-      <option value="M1403">M1403 - Études et développement marketing</option>
-      <option value="D1404">D1404 - Management et gestion de rayon alimentation</option>
-      <option value="F1602">F1602 - Électricité - bâtiment</option>
-      <option value="I1308">I1308 - Maintenance de machine industrielle</option>
-      <option value="N1103">N1103 - Magasinage et préparation de commandes</option>
-      <option value="K1304">K1304 - Services domestiques</option>
-      <option value="G1203">G1203 - Animation de loisirs divers</option>
+      <optgroup label="Conseil, orientation, emploi et RH">
+        <option value="K1801">K1801 - Conseil en emploi et insertion socioprofessionnelle</option>
+        <option value="K2101">K2101 - Conseil en formation</option>
+        <option value="K2112">K2112 - Orientation scolaire et professionnelle</option>
+        <option value="M1502">M1502 - Développement des ressources humaines (gestion des compétences)</option>
+        <option value="M1508">M1508 - Gestion de carrière et mobilité professionnelle</option>
+        <option value="K1104">K1104 - Psychologie et accompagnement psychologique</option>
+        <option value="K1207">K1207 - Intervention socio-éducative et sociale</option>
+      </optgroup>
+      <optgroup label="Commerce, vente et grande distribution">
+        <option value="D1101">D1101 - Boucherie</option>
+        <option value="D1102">D1102 - Boulangerie - viennoiserie</option>
+        <option value="D1104">D1104 - Pâtisserie, confiserie, chocolaterie</option>
+        <option value="D1211">D1211 - Vente en alimentation / épicerie</option>
+        <option value="D1401">D1401 - Vente en habillement et accessoires</option>
+        <option value="D1402">D1402 - Relation commerciale grands comptes et entreprises</option>
+        <option value="D1501">D1501 - Action commerciale (attaché commercial)</option>
+        <option value="D1502">D1502 - Management de magasin de détail</option>
+        <option value="D1404">D1404 - Management et gestion de rayon alimentation</option>
+      </optgroup>
+      <optgroup label="Bâtiment, travaux publics et industrie">
+        <option value="F1602">F1602 - Électricité bâtiment</option>
+        <option value="F1603">F1603 - Installation d'équipements sanitaires et thermiques (plomberie)</option>
+        <option value="F1606">F1606 - Peinture en bâtiment</option>
+        <option value="F1703">F1703 - Maçonnerie</option>
+        <option value="H2902">H2902 - Ajustement, assemblage et montage d'équipements industriels</option>
+        <option value="H2914">H2914 - Soudage et brasage</option>
+        <option value="H3201">H3201 - Conduite d'équipement de production industrielle</option>
+        <option value="I1308">I1308 - Maintenance de machine industrielle</option>
+      </optgroup>
+      <optgroup label="Hôtellerie, restauration, tourisme et loisirs">
+        <option value="G1602">G1602 - Personnel de cuisine (cuisinier, commis)</option>
+        <option value="G1801">G1801 - Café, bar, brasserie (serveur)</option>
+        <option value="G1401">G1401 - Assistance et géolocalisation touristique (accueil)</option>
+        <option value="G1301">G1301 - Personnel d'étage en hôtellerie / gouvernance</option>
+        <option value="G1203">G1203 - Animation de loisirs divers</option>
+      </optgroup>
+      <optgroup label="Services à la personne et à la collectivité">
+        <option value="K1302">K1302 - Assistance auprès d'enfants (auxiliaire de puériculture, animateur)</option>
+        <option value="K1305">K1305 - Intervention sociale et familiale (TISF)</option>
+        <option value="K1307">K1307 - Accompagnement et maintien à domicile (aide à domicile, aide aux seniors)</option>
+        <option value="J1501">J1501 - Soins infirmiers généralistes</option>
+        <option value="K1304">K1304 - Services domestiques</option>
+      </optgroup>
+      <optgroup label="Transport, logistique, numérique et support">
+        <option value="N1101">N1101 - Conduite de transport routier de marchandises (poids lourd)</option>
+        <option value="N1301">N1301 - Conduite d'engins de déplacement de charges (caristes, préparateurs de commandes)</option>
+        <option value="N1303">N1303 - Magasinage et préparation de commandes</option>
+        <option value="N1103">N1103 - Magasinage et préparation de commandes</option>
+        <option value="M1805" selected>M1805 - Études et développement informatique</option>
+        <option value="M1806">M1806 - Expertise et support technique en systèmes d'information</option>
+        <option value="M1802">M1802 - Expertise et support en systèmes d'information</option>
+        <option value="M1203">M1203 - Comptabilité</option>
+        <option value="M1602">M1602 - Opérations administratives (secrétariat, assistant de gestion)</option>
+        <option value="M1403">M1403 - Études et développement marketing</option>
+      </optgroup>
     </select>
     <div class="checkbox-row">
       <label class="checkbox-label" for="est_allocataire">
@@ -71,7 +131,6 @@
         Allocataire
       </label>
     </div>
-
     <label for="code_insee_commune">Code INSEE de la commune</label>
     <input type="text" id="code_insee_commune" name="code_insee_commune"
       value="75056" minlength="5" maxlength="5" pattern="[0-9]{5}|2[AB][0-9]{3}"
@@ -82,7 +141,8 @@
     <label for="synthese_entretien">Synthèse de l'entretien</label>
     <textarea id="synthese_entretien" name="synthese_entretien" required>Recherche un emploi stable dans le domaine informatique.</textarea>
 
-    <button type="submit">Évaluer le retour à l'emploi</button>
+    <button type="submit" id="scoreSubmitButton">Évaluer le retour à l'emploi</button>
+    <button type="button" id="cancelPredictionEdit" hidden>Annuler la modification</button>
   </form>
 
   <div id="result"></div>
@@ -121,9 +181,9 @@
       <thead><tr>
         <th>Date</th><th>Session</th><th>Usager</th><th>Diplôme</th><th>Ancienneté (ans)</th>
         <th>Code ROME</th><th>Allocataire</th><th>Code INSEE commune</th><th>Synthèse de l'entretien</th>
-        <th>Prédiction</th><th>Orientation</th><th>Probabilités</th><th>Modèle</th><th>Request ID</th><th>Résultat réel</th><th>Commentaire</th>
+        <th>Prédiction</th><th>Orientation</th><th>Escalade C2</th><th>Probabilités</th><th>Modèle</th><th>Request ID</th><th>Résultat réel</th><th>Commentaire</th><th>Actions</th>
       </tr></thead>
-      <tbody id="historyBody"><tr><td colspan="16">Aucune inférence dans cette session.</td></tr></tbody>
+      <tbody id="historyBody"><tr><td colspan="18">Aucune inférence dans cette session.</td></tr></tbody>
     </table>
   </section>
 
@@ -137,16 +197,112 @@
     const feedbackComments = document.getElementById('feedbackComments');
     const feedbackStatus = document.getElementById('feedbackStatus');
     const userId = document.getElementById('usager_id');
-    const sessionInfo = document.getElementById('sessionInfo');
+    const usagerHistoryStatus = document.getElementById('usagerHistoryStatus');
+    const cancelPredictionEdit = document.getElementById('cancelPredictionEdit');
     const historyBody = document.getElementById('historyBody');
     const historyPanel = document.getElementById('historyPanel');
     const toggleHistory = document.getElementById('toggleHistory');
     const historyScope = document.getElementById('historyScope');
+    const class2EscalationToggle = document.getElementById('class_2_escalation_enabled');
+    const class2EscalationHint = document.getElementById('class2EscalationHint');
+    const scoreButton = form.querySelector('button[type="submit"]');
     const labels = { 0: 'Retour rapide', 1: 'Retour moyen', 2: 'Risque de chômage longue durée' };
     const sessionId = crypto.randomUUID();
-    sessionInfo.textContent = `Session conseiller : ${sessionId}`;
     let scoredRequestId = null;
     let scoredPrediction = null;
+    let editingRequestId = null;
+    let editingSessionId = null;
+    let editingOriginalUsagerId = null;
+    let class2EscalationThreshold = 0.04;
+    let usagerCheckSequence = 0;
+
+    class2EscalationToggle.disabled = true;
+    scoreButton.disabled = true;
+
+    function updateClass2EscalationHint() {
+      if (class2EscalationToggle.disabled) return;
+      const thresholdPercent = (class2EscalationThreshold * 100).toFixed(0);
+      class2EscalationHint.textContent = class2EscalationToggle.checked
+        ? `Escalade activée pour ce dossier si P(classe 2) >= ${thresholdPercent}%.`
+        : 'Escalade classe 2 désactivée pour ce dossier.';
+    }
+
+    async function loadScoringPolicy() {
+      try {
+        const response = await fetch('/api/policy');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const policy = await response.json();
+        if (typeof policy.class_2_escalation_available !== 'boolean') {
+          throw new Error('Politique d’escalade invalide');
+        }
+
+        class2EscalationThreshold = Number(policy.class_2_escalation_threshold);
+        class2EscalationToggle.checked = policy.class_2_escalation_available;
+        class2EscalationToggle.disabled = !policy.class_2_escalation_available;
+        scoreButton.disabled = false;
+        if (class2EscalationToggle.disabled) {
+          class2EscalationHint.textContent = 'Escalade désactivée par la configuration serveur.';
+        } else {
+          updateClass2EscalationHint();
+        }
+      } catch (error) {
+        class2EscalationToggle.checked = false;
+        class2EscalationToggle.disabled = true;
+        class2EscalationHint.textContent =
+          'Politique indisponible : le scoring est temporairement désactivé.';
+      }
+    }
+
+    class2EscalationToggle.addEventListener('change', updateClass2EscalationHint);
+    loadScoringPolicy();
+
+    async function checkUsagerHistory() {
+      const usagerId = userId.value.trim();
+      const sequence = ++usagerCheckSequence;
+      if (!usagerId) {
+        usagerHistoryStatus.textContent = 'Saisis l’identifiant de l’usager.';
+        usagerHistoryStatus.className = 'hint lookup-error';
+        return null;
+      }
+
+      usagerHistoryStatus.textContent = 'Vérification de l’historique...';
+      usagerHistoryStatus.className = 'hint';
+      try {
+        const response = await fetch(
+          `/api/usagers/check?usager_id=${encodeURIComponent(usagerId)}`
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const body = await response.json();
+        if (sequence !== usagerCheckSequence || userId.value.trim() !== usagerId) {
+          return null;
+        }
+
+        const count = Number(body.previous_inferences);
+        if (!Number.isInteger(count) || count < 0) {
+          throw new Error('Réponse invalide');
+        }
+        usagerHistoryStatus.textContent = count > 0
+          ? `Attention : ${count} inférence(s) déjà enregistrée(s) pour cet usager. Un nouveau scoring sera conservé dans l’historique.`
+          : 'Aucune inférence précédente pour cet identifiant.';
+        usagerHistoryStatus.className = count > 0
+          ? 'hint lookup-duplicate'
+          : 'hint lookup-new';
+        return count;
+      } catch (error) {
+        if (sequence !== usagerCheckSequence) return null;
+        usagerHistoryStatus.textContent =
+          'Impossible de vérifier l’historique pour le moment; tu peux poursuivre le scoring.';
+        usagerHistoryStatus.className = 'hint lookup-error';
+        return null;
+      }
+    }
+
+    userId.addEventListener('blur', () => checkUsagerHistory());
+    userId.addEventListener('input', () => {
+      usagerCheckSequence += 1;
+      usagerHistoryStatus.textContent = '';
+      usagerHistoryStatus.className = 'hint';
+    });
 
     function formatError(body, status) {
       const detail = body && body.detail;
@@ -180,6 +336,56 @@
       });
     }
 
+    function resetPredictionEdit() {
+      editingRequestId = null;
+      editingSessionId = null;
+      editingOriginalUsagerId = null;
+      scoreButton.textContent = "Évaluer le retour à l'emploi";
+      cancelPredictionEdit.hidden = true;
+    }
+
+    function editPendingPrediction(entry) {
+      if (entry.true_label !== null && entry.true_label !== undefined) return;
+      const inputs = entry.inputs || {};
+      userId.value = entry.usager_id || '';
+      document.getElementById('niveau_diplome').value = inputs.niveau_diplome || '';
+      document.getElementById('anciennete_poste_ans').value = inputs.anciennete_poste_ans ?? '';
+      document.getElementById('code_rome_vise').value = inputs.code_rome_vise || '';
+      document.getElementById('est_allocataire').checked = Number(inputs.est_allocataire) === 1;
+      class2EscalationToggle.checked = inputs.class_2_escalation_enabled !== false;
+      document.getElementById('code_insee_commune').value = inputs.code_insee_commune || '';
+      document.getElementById('synthese_entretien').value = inputs.synthese_entretien || '';
+      if (!class2EscalationToggle.disabled) updateClass2EscalationHint();
+
+      editingRequestId = entry.request_id;
+      editingSessionId = entry.session_id;
+      editingOriginalUsagerId = entry.usager_id || '';
+      scoreButton.textContent = 'Enregistrer les modifications';
+      cancelPredictionEdit.hidden = false;
+      userId.focus();
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    async function deletePendingPrediction(entry) {
+      if (!window.confirm(`Supprimer la prédiction ${entry.request_id} ?`)) return;
+      try {
+        const response = await fetch(
+          `/api/predictions/${encodeURIComponent(entry.request_id)}`,
+          { method: 'DELETE' }
+        );
+        const body = await response.json();
+        if (!response.ok) throw new Error(formatError(body, response.status));
+        result.textContent = 'Prédiction en attente supprimée.';
+        result.className = 'ok';
+        result.style.display = 'block';
+        loadHistory().catch(() => {});
+      } catch (error) {
+        result.textContent = `Suppression impossible : ${error.message}`;
+        result.className = 'ko';
+        result.style.display = 'block';
+      }
+    }
+
     async function loadHistory() {
       const query = historyScope.value === 'all'
         ? 'limit=200'
@@ -191,7 +397,7 @@
       if (!entries.length) {
         const emptyRow = document.createElement('tr');
         const emptyCell = document.createElement('td');
-        emptyCell.colSpan = 16;
+        emptyCell.colSpan = 18;
         emptyCell.textContent = historyScope.value === 'all'
           ? 'Aucune inférence enregistrée.'
           : 'Aucune inférence dans cette session.';
@@ -222,6 +428,7 @@
         addCell(inputs.synthese_entretien, 'long-text');
         addCell(labels[entry.prediction] || entry.prediction);
         addCell(entry.needs_human_review ? 'Revue humaine requise' : 'Automatique');
+        addCell(inputs.class_2_escalation_enabled === false ? 'Désactivée' : 'Activée');
         addCell(Object.entries(entry.probabilities).map(([key, value]) => `${key}: ${(value * 100).toFixed(1)}%`).join(' | '));
         addCell(entry.model_version);
 
@@ -243,12 +450,34 @@
           : labels[entry.true_label];
         row.appendChild(feedbackCell);
         addCell(entry.comments, 'long-text');
+
+        const actionsCell = document.createElement('td');
+        if (entry.true_label === null || entry.true_label === undefined) {
+          const actions = document.createElement('div');
+          actions.className = 'row-actions';
+          const editButton = document.createElement('button');
+          editButton.type = 'button';
+          editButton.className = 'row-action';
+          editButton.textContent = 'Modifier';
+          editButton.addEventListener('click', () => editPendingPrediction(entry));
+          const deleteButton = document.createElement('button');
+          deleteButton.type = 'button';
+          deleteButton.className = 'row-action';
+          deleteButton.textContent = 'Supprimer';
+          deleteButton.addEventListener('click', () => deletePendingPrediction(entry));
+          actions.append(editButton, deleteButton);
+          actionsCell.appendChild(actions);
+        } else {
+          actionsCell.textContent = 'Verrouillée';
+        }
+        row.appendChild(actionsCell);
         historyBody.appendChild(row);
       });
     }
 
     historyScope.addEventListener('change', () => loadHistory().catch(() => {}));
     document.getElementById('closeFeedback').addEventListener('click', () => feedbackPanel.close());
+    cancelPredictionEdit.addEventListener('click', resetPredictionEdit);
 
     toggleHistory.addEventListener('click', () => {
       const visible = historyPanel.style.display === 'block';
@@ -262,6 +491,12 @@
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      if (!userId.value.trim()) {
+        usagerHistoryStatus.textContent = 'Saisis l’identifiant de l’usager avant le scoring.';
+        usagerHistoryStatus.className = 'hint lookup-error';
+        userId.focus();
+        return;
+      }
       const data = new FormData(form);
       const codeInseeCommune = String(data.get('code_insee_commune') || '').trim().toUpperCase();
       const payload = {
@@ -269,18 +504,24 @@
         anciennete_poste_ans: Number(data.get('anciennete_poste_ans')),
         code_rome_vise: data.get('code_rome_vise'),
         est_allocataire: document.getElementById('est_allocataire').checked ? 1 : 0,
+        class_2_escalation_enabled: class2EscalationToggle.checked,
         code_insee_commune: codeInseeCommune,
         synthese_entretien: data.get('synthese_entretien')
       };
 
       try {
-        const response = await fetch('/api/score', {
-          method: 'POST',
+        const previousInferenceCount = await checkUsagerHistory();
+        const isEditing = Boolean(editingRequestId);
+        const endpoint = isEditing
+          ? `/api/predictions/${encodeURIComponent(editingRequestId)}`
+          : '/api/score';
+        const response = await fetch(endpoint, {
+          method: isEditing ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json', 'X-Session-ID': sessionId },
           body: JSON.stringify({
             ...payload,
             usager_id: userId.value.trim() || null,
-            session_id: sessionId
+            session_id: isEditing ? editingSessionId : sessionId
           })
         });
         const body = await response.json();
@@ -296,8 +537,17 @@
         const reviewNotice = body.needs_human_review
           ? `À revoir par un conseiller (${body.review_reasons.map(reason => reasonLabels[reason] || reason).join(', ')}). Proposition du modèle : `
           : '';
-        result.textContent = `${reviewNotice}${labels[body.prediction]} - ${probabilities} (modèle ${body.model_version}) - Request ID : ${body.request_id}`;
+        const escalationState = body.class_2_escalation_enabled ? 'activée' : 'désactivée';
+        result.textContent = `${reviewNotice}${labels[body.prediction]} - ${probabilities} (escalade classe 2 ${escalationState}; modèle ${body.model_version}) - Request ID : ${body.request_id}`;
         result.className = body.needs_human_review || body.prediction === 2 ? 'ko' : 'ok';
+        if (previousInferenceCount !== null) {
+          const increment = isEditing && editingOriginalUsagerId === userId.value.trim() ? 0 : 1;
+          const total = previousInferenceCount + increment;
+          usagerHistoryStatus.textContent =
+            `${total} inférence(s) enregistrée(s) pour cet usager. Un nouveau scoring sera conservé dans l’historique.`;
+          usagerHistoryStatus.className = 'hint lookup-duplicate';
+        }
+          if (isEditing) resetPredictionEdit();
         loadHistory().catch(() => {});
       } catch (error) {
         result.textContent = `Erreur : ${error.message}`;

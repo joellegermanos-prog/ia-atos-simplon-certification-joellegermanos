@@ -38,7 +38,7 @@ jobs:
       - name: Run backend API tests
         run: >-
           pytest -v services/backend/tests
-          -k "score_calls_model_and_returns_prediction or train_validates_minimum_records or feedback_triggers_retrainer or feedback_is_saved_when_retrainer_is_unavailable"
+          -k "score_calls_model_and_returns_prediction or score_escalates_class_2_risk or score_can_disable_class_2_escalation or server_policy_can_disable_class_2_escalation or server_policy_overrides_client_escalation_choice or usager_check_returns_previous_inference_count or usager_check_allows_new_usager or pending_prediction_update_rescores_and_preserves_request_id or pending_prediction_can_be_deleted or prediction_mutations_reject_feedback or prediction_mutations_reject_unknown_request_id or train_validates_minimum_records or feedback_triggers_retrainer or feedback_is_saved_when_retrainer_is_unavailable"
       - name: Run retrainer API tests
         run: pytest -v services/retrainer/tests
 
