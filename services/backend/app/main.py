@@ -22,7 +22,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from loguru import logger
-from prometheus_client import Counter, Histogram
+from prometheus_client import Counter, Gauge, Histogram
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.middleware import LoggingMiddleware
@@ -55,6 +55,13 @@ EVALUATION_METRICS_FILE = Path(
 )
 RETRAIN_METRICS_FILE = Path(
     os.environ.get("RETRAIN_METRICS_FILE", "/app/reports/retrain.prom")
+)
+RETRAIN_MIN_FEEDBACK_CONFIGURED = Gauge(
+    "backend_retrain_min_feedback_configured",
+    "Nombre minimum de feedbacks configuré pour autoriser le réentraînement.",
+)
+RETRAIN_MIN_FEEDBACK_CONFIGURED.set(
+    max(1, int(os.environ.get("RETRAIN_MIN_FEEDBACK", "200")))
 )
 HISTORY_EXCLUDED_INPUT_FIELDS = {
     "usager_id",
@@ -149,6 +156,7 @@ def _unconsumed_feedback_count() -> int:
 
 async def _trigger_retraining_if_ready() -> str:
     min_feedback = max(1, int(os.environ.get("RETRAIN_MIN_FEEDBACK", "200")))
+    RETRAIN_MIN_FEEDBACK_CONFIGURED.set(min_feedback)
     if _unconsumed_feedback_count() < min_feedback:
         return "below_threshold"
 

@@ -799,7 +799,7 @@
       "id": 16,
       "type": "stat",
       "title": "Réentraînement - Dernière tentative",
-      "description": "Affiche le dernier statut, le nombre de feedbacks nouveaux et le seuil requis. skipped_low_volume signifie qu'aucun candidat n'a été entraîné faute de feedbacks suffisants.",
+      "description": "Affiche le dernier statut, le nombre de feedbacks nouveaux et le seuil actuellement configuré. skipped_low_volume signifie qu'aucun candidat n'a été entraîné faute de feedbacks suffisants.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -831,8 +831,8 @@
         },
         {
           "refId": "C",
-          "expr": "cisia_retrain_last_run_min_feedback",
-          "legendFormat": "Seuil requis",
+          "expr": "backend_retrain_min_feedback_configured",
+          "legendFormat": "Seuil actif",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"

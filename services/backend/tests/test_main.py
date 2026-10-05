@@ -714,3 +714,12 @@ def test_retrain_metrics_endpoint_serves_latest_run(monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert 'status="skipped_low_volume"' in response.text
+
+
+def test_metrics_exposes_current_retraining_threshold(monkeypatch):
+    monkeypatch.setenv("RETRAIN_MIN_FEEDBACK", "200")
+
+    response = TestClient(app).get("/metrics")
+
+    assert response.status_code == 200
+    assert "backend_retrain_min_feedback_configured 200.0" in response.text
