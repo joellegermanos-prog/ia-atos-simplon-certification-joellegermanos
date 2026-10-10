@@ -49,7 +49,10 @@ MODELS_DIR = SERVICE_ROOT / "models"
 REFERENCE_SET = ROOT / "data" / "reference_set.csv"
 REFERENCE_BASELINE = ROOT / "data" / "reference_baseline.json"
 SOURCE_DATASET = ROOT / "data" / "dataset_trajectoire_emploi.csv"
-MODEL_META = MODELS_DIR / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.json"
+MODEL_META = (
+    MODELS_DIR
+    / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique_calibrated.json"
+)
 DEFAULT_PROMETHEUS_OUTPUT = ROOT / "reports" / "evaluation.prom"
 
 # Seuils conservateurs pour bloquer une release uniquement sur une vraie

@@ -9,6 +9,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.evaluate_model import (
+    MODEL_META,
     check_thresholds,
     compute_metrics,
     extract_model_hyperparameters,
@@ -17,12 +18,11 @@ from scripts.evaluate_model import (
     render_prometheus_metrics,
 )
 
-MODEL_PATH = ROOT / "services" / "model" / "models" / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
-META_PATH = ROOT / "services" / "model" / "models" / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.json"
 
 def test_reference_baseline_matches_current_model():
-    model = joblib.load(MODEL_PATH)
-    meta = json.loads(META_PATH.read_text(encoding="utf-8"))
+    model = joblib.load(MODEL_META.with_suffix(".joblib"))
+    meta = json.loads(MODEL_META.read_text(encoding="utf-8"))
+    assert meta["calibration"]["method"] == "isotonic"
     df = load_reference_set()
 
     metrics = compute_metrics(model, df, meta)

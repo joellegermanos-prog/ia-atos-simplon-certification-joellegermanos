@@ -1,14 +1,14 @@
 {
-  "model_version": "v1.0.0",
+  "model_version": "v1.1.0-calibrated",
   "reference_set": "data/reference_set.csv",
   "n_reference": 500,
   "metrics": {
-    "accuracy": 0.664,
-    "f1_macro": 0.6455483000470972,
-    "f1_classe_2": 0.5395348837209303,
-    "recall_classe_2": 0.6444444444444445,
-    "precision_classe_2": 0.464,
-    "roc_auc_ovr_macro": 0.8153350194642108
+    "accuracy": 0.666,
+    "f1_macro": 0.6325738575709637,
+    "f1_classe_2": 0.5030674846625767,
+    "recall_classe_2": 0.45555555555555555,
+    "precision_classe_2": 0.5616438356164384,
+    "roc_auc_ovr_macro": 0.8102839472058706
   },
   "target_column": "classe_retour_emploi",
   "target_values": [
