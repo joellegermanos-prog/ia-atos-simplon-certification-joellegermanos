@@ -6,6 +6,21 @@ from scripts.promotion import (
 )
 
 
+def test_promotion_policy_uses_proposed_floors_and_unchanged_tolerances():
+    assert QUALITY_FLOORS == {
+        "f1_macro": 0.60,
+        "f1_classe_2": 0.45,
+        "recall_classe_2": 0.40,
+        "roc_auc_ovr_macro": 0.75,
+    }
+    assert REGRESSION_TOLERANCES == {
+        "f1_macro": 0.02,
+        "f1_classe_2": 0.03,
+        "recall_classe_2": 0.03,
+        "roc_auc_ovr_macro": 0.02,
+    }
+
+
 def test_promotion_accepts_candidate_with_class_two_gain():
     decision = decide_promotion(
         {

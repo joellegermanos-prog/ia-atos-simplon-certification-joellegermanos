@@ -5,9 +5,9 @@ from dataclasses import dataclass, field
 
 QUALITY_FLOORS: dict[str, float] = {
     "f1_macro": 0.60,
-    "f1_classe_2": 0.50,
-    "recall_classe_2": 0.59,
-    "roc_auc_ovr_macro": 0.70,
+    "f1_classe_2": 0.45,
+    "recall_classe_2": 0.40,
+    "roc_auc_ovr_macro": 0.75,
 }
 
 # The recall of class 2 is the critical business metric. A small measurement

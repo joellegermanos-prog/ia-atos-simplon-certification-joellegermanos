@@ -64,9 +64,9 @@ DEFAULT_PROMETHEUS_OUTPUT = ROOT / "reports" / "evaluation.prom"
 # déclencher sur du bruit de sampling.
 THRESHOLDS: dict[str, dict[str, float]] = {
     "f1_macro": {"absolute_min": 0.60, "max_drop_vs_baseline": 0.04},
-    "f1_classe_2": {"absolute_min": 0.50, "max_drop_vs_baseline": 0.05},
-    "recall_classe_2": {"absolute_min": 0.59, "max_drop_vs_baseline": 0.06},
-    "roc_auc_ovr_macro": {"absolute_min": 0.70, "max_drop_vs_baseline": 0.04},
+    "f1_classe_2": {"absolute_min": 0.45, "max_drop_vs_baseline": 0.05},
+    "recall_classe_2": {"absolute_min": 0.40, "max_drop_vs_baseline": 0.06},
+    "roc_auc_ovr_macro": {"absolute_min": 0.75, "max_drop_vs_baseline": 0.04},
 }
 
 

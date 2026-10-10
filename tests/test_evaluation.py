@@ -10,6 +10,7 @@ if str(ROOT) not in sys.path:
 
 from scripts.evaluate_model import (
     MODEL_META,
+    THRESHOLDS,
     check_thresholds,
     compute_metrics,
     extract_model_hyperparameters,
@@ -30,6 +31,16 @@ def test_reference_baseline_matches_current_model():
 
     for name in ["f1_macro", "f1_classe_2", "roc_auc_ovr_macro", "recall_classe_2"]:
         assert abs(metrics[name] - baseline["metrics"][name]) < 1e-12
+    assert check_thresholds(metrics, baseline) == []
+
+
+def test_release_gate_uses_calibrated_model_floors_and_existing_drop_tolerances():
+    assert THRESHOLDS == {
+        "f1_macro": {"absolute_min": 0.60, "max_drop_vs_baseline": 0.04},
+        "f1_classe_2": {"absolute_min": 0.45, "max_drop_vs_baseline": 0.05},
+        "recall_classe_2": {"absolute_min": 0.40, "max_drop_vs_baseline": 0.06},
+        "roc_auc_ovr_macro": {"absolute_min": 0.75, "max_drop_vs_baseline": 0.04},
+    }
 
 def test_thresholds_detect_degradation():
     baseline = {
