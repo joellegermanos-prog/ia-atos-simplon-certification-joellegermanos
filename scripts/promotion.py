@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 QUALITY_FLOORS: dict[str, float] = {
     "f1_macro": 0.60,
     "f1_classe_2": 0.50,
-    "recall_classe_2": 0.50,
+    "recall_classe_2": 0.59,
     "roc_auc_ovr_macro": 0.70,
 }
 

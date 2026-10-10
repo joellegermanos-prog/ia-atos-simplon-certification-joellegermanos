@@ -3,21 +3,69 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Retour-Emploi - Orientation vers le retour à l'emploi</title>
+  <title>Aide à l’évaluation du retour à l’emploi</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 2rem auto; padding: 0 1rem; }
-    label { display: block; margin: .7rem 0 .2rem; font-size: .9rem; }
-    input, select, textarea { width: 100%; padding: .55rem; box-sizing: border-box; }
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #17212b; background: #f4f7fb; }
+    * { box-sizing: border-box; }
+    body { max-width: 900px; margin: 2rem auto; padding: 0 1rem 3rem; }
+    .page-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+    .brand-mark { flex: 0 0 3.5rem; width: 3.5rem; height: 3.5rem; }
+    .page-header h1 { margin: 0 0 .35rem; font-size: clamp(1.5rem, 4vw, 2.2rem); line-height: 1.15; }
+    .page-header .page-intro { margin: 0; }
+    h1 { margin-bottom: .35rem; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+    .page-intro { margin-top: 0; color: #57606a; }
+    #scoreForm { margin-top: 1.25rem; padding: clamp(1rem, 3vw, 1.6rem); background: #fff; border: 1px solid #d8e0e8; border-radius: 14px; box-shadow: 0 8px 28px rgba(31, 48, 68, .07); }
+    .form-section { min-width: 0; margin: 0 0 1.2rem; padding: 0; border: 0; }
+    .form-section legend { width: 100%; margin-bottom: .55rem; padding-bottom: .4rem; border-bottom: 1px solid #e1e7ee; font-size: 1.05rem; font-weight: 700; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .15rem 1.2rem; }
+    label { display: block; margin: .7rem 0 .25rem; font-size: .9rem; font-weight: 600; }
+    input:not([type="checkbox"]), select, textarea { width: 100%; min-height: 2.7rem; padding: .65rem .7rem; color: inherit; background: #fff; border: 1px solid #aebbc8; border-radius: 7px; font: inherit; }
+    input:focus, select:focus, textarea:focus, button:focus-visible, summary:focus-visible { outline: 3px solid #80b7ff; outline-offset: 2px; }
     textarea { min-height: 120px; resize: vertical; }
-    .checkbox-row { display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 1rem; }
-    .checkbox-label { display: flex; align-items: center; gap: .5rem; margin: 0; }
-    .checkbox-label input { width: auto; }
+    .checkbox-row { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: .8rem; }
+    .checkbox-label { display: flex; align-items: center; gap: .55rem; margin: 0; font-weight: 500; cursor: pointer; }
+    .checkbox-label input { width: 1.1rem; height: 1.1rem; accent-color: #0969da; }
+    .escalation-option { margin: 0 0 1.25rem; padding: .8rem 1rem; background: #f6f8fa; border: 1px solid #d8e0e8; border-radius: 9px; }
+    .escalation-option .checkbox-row { margin-top: 0; }
     .hint { color: #57606a; font-size: .8rem; }
     .lookup-new { color: #137333; }
     .lookup-duplicate { color: #8a4b08; }
     .lookup-error { color: #b42318; }
-    button { margin-top: 1rem; padding: .7rem 1.2rem; font-size: 1rem; cursor: pointer; }
-    #result { margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none; }
+    button { margin-top: 1rem; padding: .7rem 1.2rem; border: 1px solid #0969da; border-radius: 7px; background: #0969da; color: #fff; font: inherit; font-weight: 650; cursor: pointer; }
+    button:hover:not(:disabled) { background: #0757b8; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #cancelPredictionEdit { background: #fff; color: #17212b; border-color: #aebbc8; }
+    #result { margin-top: 1.25rem; padding: clamp(1rem, 3vw, 1.5rem); background: #fff; border: 1px solid #d8e0e8; border-left: 6px solid #0969da; border-radius: 10px; box-shadow: 0 8px 28px rgba(31, 48, 68, .07); }
+    #result.ok { background: #f0f8f2; border-color: #b7dfc0; border-left-color: #238636; }
+    #result.review { background: #fff8e6; border-color: #f0d58a; border-left-color: #9a6700; }
+    #result.risk { background: #fff1f0; border-color: #ffc8c3; border-left-color: #cf222e; }
+    .result-heading { margin: 0 0 .35rem; font-size: 1.25rem; }
+    .result-decision { margin: .5rem 0; font-size: 1.05rem; }
+    .result-disclaimer { margin: .6rem 0; color: #414d5a; font-size: .9rem; }
+    .result-details { margin-top: .85rem; padding-top: .7rem; border-top: 1px solid rgba(80, 90, 100, .2); }
+    .result-details summary { width: fit-content; color: #34465a; font-size: .85rem; cursor: pointer; }
+    .result-meta { margin: .65rem 0 0; color: #57606a; font-size: .82rem; overflow-wrap: anywhere; }
+    .probability-chart { display: grid; gap: .7rem; margin-top: 1rem; }
+    .probability-row { display: grid; grid-template-columns: minmax(140px, 1fr) 3fr 4.5rem; align-items: center; gap: .65rem; }
+    .probability-label { margin: 0; font-size: .9rem; }
+    .probability-row.predicted .probability-label { font-weight: 700; }
+    .probability-track { height: 1rem; overflow: hidden; background: #dbe2ea; border-radius: 999px; }
+    .probability-fill { height: 100%; border-radius: inherit; transition: width .3s ease; }
+    .probability-fill.class-0 { background: #238636; }
+    .probability-fill.class-1 { background: #0969da; }
+    .probability-fill.class-2 { background: #cf222e; }
+    .probability-value { font-variant-numeric: tabular-nums; text-align: right; }
+    .result-notice { margin: .5rem 0; font-weight: 650; }
+    @media (max-width: 600px) {
+      body { margin-top: 1rem; }
+      .page-header { align-items: flex-start; gap: .75rem; }
+      .brand-mark { flex-basis: 2.8rem; width: 2.8rem; height: 2.8rem; }
+      .page-header h1 { font-size: 1.45rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .probability-row { grid-template-columns: minmax(115px, 1fr) 1.5fr 3.5rem; gap: .4rem; }
+      .probability-label { font-size: .8rem; }
+      button[type="submit"] { width: 100%; }
+    }
     #feedbackPanel { width: min(520px, 92vw); padding: 1.2rem; border: 1px solid #d0d7de; border-radius: 8px; }
     #feedbackPanel::backdrop { background: rgba(0, 0, 0, .45); }
     .dialog-header { display: flex; justify-content: space-between; align-items: center; }
@@ -38,23 +86,31 @@
   </style>
 </head>
 <body>
-  <h1>Orientation vers le retour a l'emploi</h1>
-  <p>Évaluez le délai probable de retour à l'emploi.</p>
-
-  <label for="usager_id">Usager</label>
-  <input type="text" id="usager_id" name="usager_id" maxlength="100" value="USAGER" placeholder="Identifiant du référentiel national" required>
-  <p id="usagerHistoryStatus" class="hint" role="status" aria-live="polite"></p>
-  <div class="checkbox-row">
-    <label class="checkbox-label" for="class_2_escalation_enabled">
-      <input type="checkbox" id="class_2_escalation_enabled" name="class_2_escalation_enabled">
-      Escalade classe 2 (P ≥ seuil)
-    </label>
-  </div>
-  <p id="class2EscalationHint" class="hint" role="status" aria-live="polite">
-    Chargement de la politique d'escalade...
-  </p>
+  <main>
+  <header class="page-header">
+    <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <rect width="64" height="64" rx="16" fill="#123b66"/>
+      <path d="M16 27h32v21H16zM22 27v-5h20v5M16 34h32M28 34v4h8v-4" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+      <path d="m39 18 5-5 5 5M44 13v9" fill="none" stroke="#72e0b2" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    </svg>
+    <div>
+      <h1>Aide à l’évaluation du retour à l’emploi</h1>
+      <p class="page-intro">Estimation indicative à examiner au regard de la situation de la personne.</p>
+    </div>
+  </header>
 
   <form id="scoreForm">
+    <fieldset class="form-section">
+      <legend>Identification du dossier</legend>
+      <label for="usager_id">Identifiant de l'usager</label>
+      <input type="text" id="usager_id" name="usager_id" maxlength="100" value="U0000X" placeholder="Identifiant du référentiel national" required>
+      <p id="usagerHistoryStatus" class="hint" role="status" aria-live="polite"></p>
+    </fieldset>
+
+    <fieldset class="form-section">
+    <legend>Situation</legend>
+    <div class="form-grid">
+    <div>
     <label for="niveau_diplome">Niveau de diplôme</label>
     <select id="niveau_diplome" name="niveau_diplome" required>
       <option>Sans diplôme</option>
@@ -62,10 +118,22 @@
       <option selected>Bac+2</option>
       <option>Bac+5</option>
     </select>
-
+    </div>
+    <div>
     <label for="anciennete_poste_ans">Ancienneté dans le dernier poste (années)</label>
     <input type="number" step="0.1" min="0" id="anciennete_poste_ans" name="anciennete_poste_ans" value="3" required>
+    </div>
+    <div class="checkbox-row">
+      <label class="checkbox-label" for="est_allocataire">
+        <input type="checkbox" id="est_allocataire" name="est_allocataire" value="1">
+        Allocataire
+      </label>
+    </div>
+    </div>
+    </fieldset>
 
+    <fieldset class="form-section">
+    <legend>Projet professionnel</legend>
     <label for="code_rome_vise">Code ROME visé</label>
     <select id="code_rome_vise" name="code_rome_vise" required>
       <optgroup label="Conseil, orientation, emploi et RH">
@@ -125,27 +193,37 @@
         <option value="M1403">M1403 - Études et développement marketing</option>
       </optgroup>
     </select>
-    <div class="checkbox-row">
-      <label class="checkbox-label" for="est_allocataire">
-        <input type="checkbox" id="est_allocataire" name="est_allocataire" value="1">
-        Allocataire
-      </label>
-    </div>
     <label for="code_insee_commune">Code INSEE de la commune</label>
     <input type="text" id="code_insee_commune" name="code_insee_commune"
       value="75056" minlength="5" maxlength="5" pattern="[0-9]{5}|2[AB][0-9]{3}"
       autocapitalize="characters" autocomplete="off" required
       aria-describedby="codeInseeHint" title="Saisissez un code INSEE communal à 5 caractères, par exemple 75056 ou 2A004.">
     <p class="hint" id="codeInseeHint">5 caractères : chiffres, ou 2A/2B suivi de 3 chiffres pour la Corse. Exemple : 75056.</p>
+    </fieldset>
 
+    <fieldset class="form-section">
+    <legend>Entretien</legend>
     <label for="synthese_entretien">Synthèse de l'entretien</label>
     <textarea id="synthese_entretien" name="synthese_entretien" required>Recherche un emploi stable dans le domaine informatique.</textarea>
+    </fieldset>
+
+    <section class="escalation-option" aria-label="Option d'escalade">
+      <div class="checkbox-row">
+        <label class="checkbox-label" for="class_2_escalation_enabled">
+          <input type="checkbox" id="class_2_escalation_enabled" name="class_2_escalation_enabled">
+          Activer l'escalade classe 2 (P ≥ seuil)
+        </label>
+      </div>
+      <p id="class2EscalationHint" class="hint" role="status" aria-live="polite">
+        Chargement de la politique d'escalade...
+      </p>
+    </section>
 
     <button type="submit" id="scoreSubmitButton">Évaluer le retour à l'emploi</button>
     <button type="button" id="cancelPredictionEdit" hidden>Annuler la modification</button>
   </form>
 
-  <div id="result"></div>
+  <section id="result" role="status" aria-live="polite" tabindex="-1" hidden></section>
 
   <dialog id="feedbackPanel" aria-labelledby="feedbackTitle">
     <div class="dialog-header">
@@ -186,6 +264,7 @@
       <tbody id="historyBody"><tr><td colspan="18">Aucune inférence dans cette session.</td></tr></tbody>
     </table>
   </section>
+  </main>
 
   <script>
     const form = document.getElementById('scoreForm');
@@ -309,6 +388,90 @@
         return detail.map((item) => `${(item.loc || []).slice(1).join('.')} : ${item.msg}`).join(' ; ');
       }
       return detail || `HTTP ${status}`;
+    }
+
+    function renderPredictionResult(body) {
+      const heading = document.createElement('h2');
+      heading.className = 'result-heading';
+      heading.textContent = body.needs_human_review
+        ? 'À revoir par un conseiller'
+        : 'Résultat de la prédiction';
+
+      const decision = document.createElement('p');
+      decision.className = 'result-decision';
+      decision.textContent = body.needs_human_review
+        ? `Classe proposée par le modèle : ${labels[body.prediction]}`
+        : `Classe prédite : ${labels[body.prediction]}`;
+
+      const chartTitle = document.createElement('h3');
+      chartTitle.textContent = 'Probabilités par classe';
+      const disclaimer = document.createElement('p');
+      disclaimer.className = 'result-disclaimer';
+      disclaimer.textContent =
+        'Ces pourcentages sont des estimations du modèle, pas une certitude ni une garantie de résultat.';
+
+      const chart = document.createElement('div');
+      chart.className = 'probability-chart';
+      chart.setAttribute('aria-label', 'Probabilités prédites par classe');
+      [0, 1, 2].forEach((classIndex) => {
+        const probability = Number(body.probabilities[String(classIndex)]);
+        if (!Number.isFinite(probability) || probability < 0 || probability > 1) {
+          throw new Error(`Probabilité invalide pour la classe ${classIndex}`);
+        }
+        const percentage = probability * 100;
+        const row = document.createElement('div');
+        row.className = `probability-row${body.prediction === classIndex ? ' predicted' : ''}`;
+
+        const label = document.createElement('p');
+        label.className = 'probability-label';
+        label.textContent = labels[classIndex];
+
+        const track = document.createElement('div');
+        track.className = 'probability-track';
+        track.setAttribute('role', 'progressbar');
+        track.setAttribute('aria-label', labels[classIndex]);
+        track.setAttribute('aria-valuemin', '0');
+        track.setAttribute('aria-valuemax', '100');
+        track.setAttribute('aria-valuenow', percentage.toFixed(1));
+
+        const fill = document.createElement('div');
+        fill.className = `probability-fill class-${classIndex}`;
+        fill.style.width = `${percentage}%`;
+        track.appendChild(fill);
+
+        const value = document.createElement('strong');
+        value.className = 'probability-value';
+        value.textContent = `${percentage.toFixed(1)}%`;
+        row.append(label, track, value);
+        chart.appendChild(row);
+      });
+
+      const reasonLabels = {
+        low_confidence: 'confiance sous le seuil',
+        class_2_risk: 'risque classe 2 à confirmer'
+      };
+      const escalationState = body.class_2_escalation_enabled ? 'activée' : 'désactivée';
+      const metadata = document.createElement('p');
+      metadata.className = 'result-meta';
+      metadata.textContent =
+        `Escalade classe 2 ${escalationState} · Modèle ${body.model_version} · Request ID : ${body.request_id}`;
+      const details = document.createElement('details');
+      details.className = 'result-details';
+      const summary = document.createElement('summary');
+      summary.textContent = 'Détails de suivi';
+      details.append(summary, metadata);
+
+      result.replaceChildren(heading);
+      result.hidden = false;
+      if (body.needs_human_review) {
+        const notice = document.createElement('p');
+        notice.className = 'result-notice';
+        notice.textContent = `Motif(s) : ${body.review_reasons
+          .map((reason) => reasonLabels[reason] || reason)
+          .join(', ')}`;
+        result.appendChild(notice);
+      }
+      result.append(decision, chartTitle, chart, disclaimer, details);
     }
 
     function openFeedback(requestId, prediction, knownTrueLabel = null) {
@@ -496,6 +659,8 @@
         userId.focus();
         return;
       }
+      scoreButton.disabled = true;
+      scoreButton.textContent = 'Évaluation en cours...';
       const data = new FormData(form);
       const codeInseeCommune = String(data.get('code_insee_commune') || '').trim().toUpperCase();
       const payload = {
@@ -526,19 +691,12 @@
         const body = await response.json();
         if (!response.ok) throw new Error(formatError(body, response.status));
 
-        const probabilities = Object.entries(body.probabilities)
-          .map(([key, value]) => `${labels[key]} : ${(value * 100).toFixed(1)}%`)
-          .join(' | ');
-        const reasonLabels = {
-          low_confidence: 'confiance sous le seuil',
-          class_2_risk: 'risque classe 2 à confirmer'
-        };
-        const reviewNotice = body.needs_human_review
-          ? `À revoir par un conseiller (${body.review_reasons.map(reason => reasonLabels[reason] || reason).join(', ')}). Proposition du modèle : `
-          : '';
-        const escalationState = body.class_2_escalation_enabled ? 'activée' : 'désactivée';
-        result.textContent = `${reviewNotice}${labels[body.prediction]} - ${probabilities} (escalade classe 2 ${escalationState}; modèle ${body.model_version}) - Request ID : ${body.request_id}`;
-        result.className = body.needs_human_review || body.prediction === 2 ? 'ko' : 'ok';
+        renderPredictionResult(body);
+        result.className = body.needs_human_review
+          ? 'review'
+          : body.prediction === 2
+            ? 'risk'
+            : 'ok';
         if (previousInferenceCount !== null) {
           const increment = isEditing && editingOriginalUsagerId === userId.value.trim() ? 0 : 1;
           const total = previousInferenceCount + increment;
@@ -549,10 +707,16 @@
           if (isEditing) resetPredictionEdit();
         loadHistory().catch(() => {});
       } catch (error) {
-        result.textContent = `Erreur : ${error.message}`;
-        result.className = 'ko';
+        const message = document.createElement('p');
+        message.textContent = `Erreur : ${error.message}`;
+        result.replaceChildren(message);
+        result.className = 'risk';
       }
-      result.style.display = 'block';
+      result.hidden = false;
+      scoreButton.disabled = class2EscalationToggle.disabled;
+      scoreButton.textContent = editingRequestId
+        ? 'Enregistrer les modifications'
+        : "Évaluer le retour à l'emploi";
     });
 
     feedbackForm.addEventListener('submit', async (event) => {
