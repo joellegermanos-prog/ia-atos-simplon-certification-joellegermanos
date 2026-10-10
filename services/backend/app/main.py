@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
@@ -487,7 +487,7 @@ async def score(application: ScoringApplication, request: Request) -> Prediction
                 prediction.prediction,
                 json.dumps(prediction.probabilities),
                 prediction.model_version,
-                datetime.now(timezone.utc).isoformat(),
+                datetime.now(UTC).isoformat(),
                 int(prediction.needs_human_review),
                 json.dumps(prediction.review_reasons),
             ),
@@ -530,7 +530,7 @@ async def update_pending_prediction(
                 prediction.prediction,
                 json.dumps(prediction.probabilities),
                 prediction.model_version,
-                datetime.now(timezone.utc).isoformat(),
+                datetime.now(UTC).isoformat(),
                 int(prediction.needs_human_review),
                 json.dumps(prediction.review_reasons),
                 request_id,
@@ -636,7 +636,7 @@ async def feedback(item: Feedback) -> dict[str, str]:
                     item.prediction,
                     item.true_label,
                     item.comments,
-                    datetime.now(timezone.utc).isoformat(),
+                    datetime.now(UTC).isoformat(),
                 ),
             )
             result_status = "stored"

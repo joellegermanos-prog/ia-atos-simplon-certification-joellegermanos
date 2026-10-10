@@ -18,7 +18,7 @@ import shutil
 import sqlite3
 import sys
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import joblib
@@ -222,8 +222,8 @@ def write_candidate_metadata(
     payload = {
         "model_name": "cisia_emploi",
         "model_type": "xgboost",
-        "model_version": f"candidate-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
-        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+        "model_version": f"candidate-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}",
+        "created_at_utc": datetime.now(UTC).isoformat(),
         "dataset": {
             "path": str(SOURCE_DATASET.relative_to(ROOT)).replace("\\", "/"),
             "sha256": hashlib.sha256(SOURCE_DATASET.read_bytes()).hexdigest(),
@@ -378,7 +378,7 @@ def build_decision_record(
     return {
         "schema_version": DECISION_SCHEMA_VERSION,
         "decision_id": str(uuid.uuid4()),
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "timestamp_utc": datetime.now(UTC).isoformat(),
         "decision": {"status": status, "promote": decision.promote, "reason": decision.reason},
         "candidate": {
             "model_name": candidate_metadata.get("model_name"),
@@ -468,7 +468,7 @@ def write_promoted_metadata(
     metadata["candidate_dataset"] = candidate_metadata.get("dataset")
     metadata["candidate_training"] = candidate_metadata.get("training")
     metadata["model_version"] = promoted_version
-    metadata["created_at_utc"] = datetime.now(timezone.utc).isoformat()
+    metadata["created_at_utc"] = datetime.now(UTC).isoformat()
     metadata["promotion"] = {
         "status": "promoted",
         "version": promoted_version,
@@ -515,7 +515,7 @@ def write_retrain_result(result: dict[str, object]) -> None:
         f"cisia_retrain_candidate_trained {candidate_trained}",
         "# HELP cisia_retrain_last_run_timestamp_seconds Unix timestamp of the latest retrainer run",
         "# TYPE cisia_retrain_last_run_timestamp_seconds gauge",
-        f"cisia_retrain_last_run_timestamp_seconds {datetime.now(timezone.utc).timestamp()}",
+        f"cisia_retrain_last_run_timestamp_seconds {datetime.now(UTC).timestamp()}",
         "",
     ])
     temporary_metrics_path = metrics_path.with_suffix(metrics_path.suffix + ".tmp")
