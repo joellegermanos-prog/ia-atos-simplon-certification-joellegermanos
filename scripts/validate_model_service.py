@@ -80,12 +80,14 @@ def main() -> int:
 
         model = app.state.model
         if not isinstance(model, CalibratedClassifierCV):
-            raise RuntimeError("Loaded candidate is not a CalibratedClassifierCV")
+            raise TypeError("Loaded candidate is not a CalibratedClassifierCV")
         base_pipeline = model.calibrated_classifiers_[0].estimator
         if not isinstance(base_pipeline, Pipeline) or not isinstance(
             base_pipeline.named_steps.get("classifier"), XGBClassifier
         ):
-            raise RuntimeError("Calibrated candidate lost its SHAP-compatible XGBoost pipeline")
+            raise TypeError(
+                "Calibrated candidate lost its SHAP-compatible XGBoost pipeline"
+            )
 
     print(json.dumps({
         "artifact": str(artifact),
