@@ -16,6 +16,7 @@ import os
 import re
 import shutil
 import sqlite3
+import subprocess
 import sys
 import uuid
 from datetime import UTC, datetime
@@ -27,6 +28,8 @@ import numpy as np
 import pandas as pd
 from mlflow.exceptions import MlflowException
 from mlflow.tracking import MlflowClient
+from sklearn.base import BaseEstimator
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import accuracy_score, f1_score, recall_score
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
@@ -44,6 +47,9 @@ DECISION_LOG = Path(os.environ.get("DECISION_LOG", str(ROOT / "decisions_log.jso
 PRODUCTION_PATH = MODELS / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.joblib"
 PRODUCTION_METADATA_PATH = MODELS / "cisia_emploi_xgboost_multimodal_ethique_best_class_2_ethique.json"
 REFERENCE_SET = DATA / "reference_set.csv"
+CALIBRATION_INDEX_PATH = DATA / "calibration_indices.json"
+ABSTENTION_THRESHOLD = 0.55
+CALIBRATION_METHOD = "isotonic"
 MLFLOW_EXPERIMENT = "cisia-emploi-retraining"
 REGISTERED_MODEL_NAME = "cisia-emploi"
 DECISION_SCHEMA_VERSION = "2.0"
@@ -130,6 +136,40 @@ def reference_holdout_indices() -> list[int]:
     return [int(index) for index in metadata["dataset"]["test_indices"]]
 
 
+def calibration_indices() -> list[int]:
+    """Load and verify the fixed calibration split and its source dataset."""
+    manifest = json.loads(CALIBRATION_INDEX_PATH.read_text(encoding="utf-8"))
+    indices = manifest.get("indices")
+    if manifest.get("schema_version") != 1 or not isinstance(indices, list):
+        raise ValueError(f"Invalid calibration-index manifest: {CALIBRATION_INDEX_PATH}")
+    if len(indices) != 400 or any(not isinstance(index, int) for index in indices):
+        raise ValueError("Calibration-index manifest must contain exactly 400 integer indices")
+    if len(set(indices)) != len(indices):
+        raise ValueError("Calibration-index manifest contains duplicate indices")
+
+    index_digest = hashlib.sha256(
+        json.dumps(indices, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if index_digest != manifest.get("indices_sha256"):
+        raise ValueError("Calibration-index manifest hash does not match its indices")
+    dataset_digest = _sha256(SOURCE_DATASET)
+    if dataset_digest != manifest.get("source_dataset_sha256"):
+        raise ValueError("Calibration-index manifest belongs to a different source dataset")
+    return indices
+
+
+def load_calibration_data() -> tuple[pd.DataFrame, pd.Series]:
+    """Load the fixed 400-row calibration sample from the source dataset."""
+    features, target = load_dataset(SOURCE_DATASET, include_sensitive=False)
+    indices = calibration_indices()
+    missing_indices = set(indices) - set(features.index)
+    if missing_indices:
+        raise ValueError(
+            f"Calibration indices are absent from the source dataset: {sorted(missing_indices)[:5]}"
+        )
+    return features.loc[indices], target.loc[indices]
+
+
 def _normalize_value(value: object) -> str:
     if value is None or (isinstance(value, float) and np.isnan(value)):
         return ""
@@ -149,14 +189,41 @@ def drop_reference_overlap(feedbacks: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     if feedbacks.empty or not REFERENCE_SET.exists():
         return feedbacks, 0
     reference = create_features(pd.read_csv(REFERENCE_SET))
+    return _drop_feature_overlap(feedbacks, reference)
+
+
+def drop_calibration_overlap(feedbacks: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """Prevent feedbacks replaying one of the fixed calibration observations."""
+    if feedbacks.empty:
+        return feedbacks, 0
+    source = pd.read_csv(
+        SOURCE_DATASET,
+        dtype={
+            "usager_id": "string",
+            "code_rome_vise": "string",
+            "code_insee_commune": "string",
+        },
+    )
+    calibration = create_features(source.loc[calibration_indices()])
+    return _drop_feature_overlap(feedbacks, calibration)
+
+
+def _drop_feature_overlap(
+    feedbacks: pd.DataFrame,
+    protected: pd.DataFrame,
+) -> tuple[pd.DataFrame, int]:
     candidates = create_features(feedbacks)
     columns = [
         column
         for column in ("niveau_diplome", "anciennete_poste_ans", "code_rome_vise",
                        "departement", "est_allocataire", "synthese_entretien")
-        if column in reference.columns and column in candidates.columns
+        if column in protected.columns and column in candidates.columns
     ]
-    overlap = _feature_keys(candidates, columns).isin(set(_feature_keys(reference, columns)))
+    if not columns:
+        raise ValueError("No common model features are available for overlap detection")
+    overlap = _feature_keys(candidates, columns).isin(
+        set(_feature_keys(protected, columns))
+    )
     return feedbacks.loc[~overlap.to_numpy()].reset_index(drop=True), int(overlap.sum())
 
 
@@ -167,8 +234,15 @@ def build_training_data(feedbacks: pd.DataFrame) -> tuple[pd.DataFrame, pd.Serie
     observations it has never seen, like the production model.
     """
     historical_X, historical_y = load_dataset(SOURCE_DATASET, include_sensitive=False)
-    holdout = historical_X.index.intersection(reference_holdout_indices())
-    historical_X, historical_y = historical_X.drop(index=holdout), historical_y.drop(index=holdout)
+    holdout_indices = set(reference_holdout_indices())
+    calibration_index_set = set(calibration_indices())
+    if holdout_indices & calibration_index_set:
+        raise ValueError("Calibration indices overlap the frozen holdout")
+    excluded_indices = holdout_indices | calibration_index_set
+    historical_X = historical_X.drop(
+        index=historical_X.index.intersection(excluded_indices)
+    )
+    historical_y = historical_y.loc[historical_X.index]
     if feedbacks.empty:
         return historical_X, historical_y
 
@@ -211,14 +285,19 @@ def build_candidate() -> Pipeline:
 
 
 def write_candidate_metadata(
-    candidate: Pipeline,
+    candidate: BaseEstimator,
     rows: int,
     feedback_count: int,
     metrics: dict[str, float],
     feedback_request_ids: list[str] | None = None,
-    excluded_feedbacks: int = 0,
+    excluded_reference_feedbacks: int = 0,
+    excluded_calibration_feedbacks: int = 0,
 ) -> None:
     holdout = reference_holdout_indices()
+    calibration = calibration_indices()
+    calibration_digest = hashlib.sha256(
+        json.dumps(calibration, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     payload = {
         "model_name": "cisia_emploi",
         "model_type": "xgboost",
@@ -229,6 +308,12 @@ def write_candidate_metadata(
             "sha256": hashlib.sha256(SOURCE_DATASET.read_bytes()).hexdigest(),
             "excluded_reference_indices": holdout,
             "excluded_reference_rows": len(holdout),
+            "excluded_calibration_indices": calibration,
+            "excluded_calibration_rows": len(calibration),
+            "calibration_indices_sha256": calibration_digest,
+            "calibration_indices_file": str(
+                CALIBRATION_INDEX_PATH.relative_to(ROOT)
+            ).replace("\\", "/"),
             "reference_set": str(REFERENCE_SET.relative_to(ROOT)).replace("\\", "/"),
             "reference_set_sha256": (
                 hashlib.sha256(REFERENCE_SET.read_bytes()).hexdigest()
@@ -240,8 +325,20 @@ def write_candidate_metadata(
             "rows": rows,
             "new_feedbacks": feedback_count,
             "feedback_request_ids": feedback_request_ids or [],
-            "excluded_feedbacks_replaying_reference": excluded_feedbacks,
+            "excluded_feedbacks_replaying_reference": excluded_reference_feedbacks,
+            "excluded_feedbacks_replaying_calibration": excluded_calibration_feedbacks,
             "metrics_train": metrics,
+        },
+        "calibration": {
+            "method": CALIBRATION_METHOD,
+            "estimator": "sklearn.calibration.CalibratedClassifierCV",
+            "cv": "prefit",
+            "fit_rows": rows - feedback_count,
+            "calibration_rows": len(calibration),
+            "calibration_indices_file": str(
+                CALIBRATION_INDEX_PATH.relative_to(ROOT)
+            ).replace("\\", "/"),
+            "calibration_indices_sha256": calibration_digest,
         },
         "target": {
             "column": TARGET_COLUMN,
@@ -267,7 +364,7 @@ def mark_feedbacks_consumed(request_ids: list[str]) -> None:
         )
 
 
-def evaluate_on_reference(model: Pipeline) -> dict[str, float]:
+def evaluate_on_reference(model: BaseEstimator) -> dict[str, float]:
     """Evaluate a model on the frozen CISIA reference set."""
     from sklearn.metrics import (
         accuracy_score,
@@ -284,6 +381,13 @@ def evaluate_on_reference(model: Pipeline) -> dict[str, float]:
     features = create_features(reference.drop(columns=[TARGET_COLUMN]))
     predictions = model.predict(features)
     probabilities = model.predict_proba(features)
+    class_two_mask = target.to_numpy() == 2
+    critical_error_count = int(
+        np.count_nonzero(class_two_mask & (predictions == 0))
+    )
+    class_two_support = int(np.count_nonzero(class_two_mask))
+    if class_two_support == 0:
+        raise ValueError("The frozen holdout does not contain class 2")
     return {
         "accuracy": float(accuracy_score(target, predictions)),
         "f1_macro": float(f1_score(target, predictions, average="macro", zero_division=0)),
@@ -299,6 +403,14 @@ def evaluate_on_reference(model: Pipeline) -> dict[str, float]:
         "roc_auc_ovr_macro": float(
             roc_auc_score(target, probabilities, multi_class="ovr", average="macro")
         ),
+        "abstention_rate_pmax_below_0_55": float(
+            np.mean(probabilities.max(axis=1) < ABSTENTION_THRESHOLD)
+        ),
+        "critical_error_2_to_0_rate": float(
+            critical_error_count / class_two_support
+        ),
+        "critical_error_2_to_0_count": float(critical_error_count),
+        "class_2_support": float(class_two_support),
     }
 
 
@@ -338,7 +450,7 @@ def production_identity() -> dict[str, object]:
     }
 
 
-def register_candidate(candidate: Pipeline, decision_status: str) -> dict[str, object]:
+def register_candidate(candidate: BaseEstimator, decision_status: str) -> dict[str, object]:
     """Register the candidate in the MLflow registry under the challenger alias."""
     registry: dict[str, object] = {"name": REGISTERED_MODEL_NAME, "alias": "challenger", "version": None}
     try:
@@ -395,6 +507,7 @@ def build_decision_record(
             "new_feedbacks": training.get("new_feedbacks"),
             "feedback_request_ids": training.get("feedback_request_ids", []),
             "excluded_feedbacks_replaying_reference": training.get("excluded_feedbacks_replaying_reference", 0),
+            "excluded_feedbacks_replaying_calibration": training.get("excluded_feedbacks_replaying_calibration", 0),
         },
         "production": production,
         "data": {
@@ -403,6 +516,11 @@ def build_decision_record(
             "training_dataset": dataset.get("path"),
             "training_dataset_sha256": dataset.get("sha256"),
             "excluded_reference_rows": dataset.get("excluded_reference_rows"),
+            "excluded_calibration_rows": dataset.get("excluded_calibration_rows"),
+            "calibration_indices_file": dataset.get("calibration_indices_file"),
+            "calibration_indices_sha256": dataset.get(
+                "calibration_indices_sha256"
+            ),
         },
         "metrics": {
             "evaluated_on": "reference_set",
@@ -467,6 +585,12 @@ def write_promoted_metadata(
     metadata["configuration"] = candidate_metadata["configuration"]
     metadata["candidate_dataset"] = candidate_metadata.get("dataset")
     metadata["candidate_training"] = candidate_metadata.get("training")
+    metadata["calibration"] = candidate_metadata["calibration"]
+    metadata.setdefault("evaluation", {})["metrics"] = candidate_metrics
+    metadata["evaluation"]["status"] = "calibrated_holdout_evaluated"
+    metadata["evaluation"]["holdout_used_during_training"] = False
+    metadata.setdefault("artifacts", {})["model_path"] = PROMOTED_PATH.name
+    metadata["artifacts"]["metadata_path"] = PROMOTED_METADATA_PATH.name
     metadata["model_version"] = promoted_version
     metadata["created_at_utc"] = datetime.now(UTC).isoformat()
     metadata["promotion"] = {
@@ -482,6 +606,30 @@ def write_promoted_metadata(
         encoding="utf-8",
     )
     return promoted_version
+
+
+def validate_candidate_with_model_service(candidate_path: Path) -> None:
+    """Run the production model API against the candidate before promotion."""
+    validation_script = ROOT / "scripts" / "validate_model_service.py"
+    try:
+        completed = subprocess.run(
+            [sys.executable, str(validation_script), str(candidate_path.resolve())],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise RuntimeError("Could not validate candidate in the model service") from exc
+    if completed.returncode != 0:
+        details = (completed.stdout + "\n" + completed.stderr).strip()[-4000:]
+        raise RuntimeError(
+            f"Candidate model-service validation failed "
+            f"(exit code {completed.returncode}):\n{details}"
+        )
+    if completed.stdout.strip():
+        print(completed.stdout.strip())
 
 
 def write_retrain_result(result: dict[str, object]) -> None:
@@ -533,9 +681,14 @@ def main() -> int:
 
     feedbacks = load_unconsumed_feedbacks()
     read_request_ids = feedbacks["request_id"].tolist() if not feedbacks.empty else []
-    feedbacks, excluded_count = drop_reference_overlap(feedbacks)
+    feedbacks, excluded_reference_count = drop_reference_overlap(feedbacks)
+    feedbacks, excluded_calibration_count = drop_calibration_overlap(feedbacks)
+    excluded_count = excluded_reference_count + excluded_calibration_count
     if excluded_count:
-        print(f"Excluded {excluded_count} feedbacks replaying reference-set observations")
+        print(
+            f"Excluded {excluded_count} feedbacks replaying protected "
+            "reference or calibration observations"
+        )
     feedback_count = len(feedbacks)
     if not should_retrain(feedback_count, args.min_feedback):
         write_retrain_result(
@@ -549,12 +702,22 @@ def main() -> int:
         return 0
 
     X_train, y_train = build_training_data(feedbacks)
-    candidate = build_candidate()
-    candidate.fit(
+    base_candidate = build_candidate()
+    base_candidate.fit(
         X_train,
         y_train,
         classifier__sample_weight=y_train.map(CLASS_WEIGHTS).to_numpy(dtype=float),
     )
+
+    X_calibration, y_calibration = load_calibration_data()
+    # The service image pins scikit-learn 1.5.1; cv="prefit" keeps the
+    # separately fitted base pipeline fixed while learning isotonic maps.
+    candidate = CalibratedClassifierCV(
+        base_candidate,
+        method=CALIBRATION_METHOD,
+        cv="prefit",
+    )
+    candidate.fit(X_calibration, y_calibration)
 
     probabilities = candidate.predict_proba(X_train)
     predictions = candidate.predict(X_train)
@@ -576,8 +739,11 @@ def main() -> int:
         feedback_count,
         metrics,
         feedback_request_ids=feedbacks["request_id"].tolist(),
-        excluded_feedbacks=excluded_count,
+        excluded_reference_feedbacks=excluded_reference_count,
+        excluded_calibration_feedbacks=excluded_calibration_count,
     )
+
+    validate_candidate_with_model_service(CANDIDATE_PATH)
 
     production = joblib.load(PRODUCTION_PATH)
     candidate_reference_metrics = evaluate_on_reference(candidate)
@@ -645,10 +811,15 @@ def main() -> int:
             "promoted_path": str(PROMOTED_PATH) if decision.promote else None,
             "new_feedbacks": feedback_count,
             "excluded_feedbacks": excluded_count,
+            "excluded_feedbacks_replaying_reference": excluded_reference_count,
+            "excluded_feedbacks_replaying_calibration": excluded_calibration_count,
             "min_feedback": args.min_feedback,
             "decision": decision.reason,
             "metrics_train": metrics,
-            "metrics_reference": candidate_reference_metrics,
+            "metrics_reference": {
+                "candidate": candidate_reference_metrics,
+                "production": production_reference_metrics,
+            },
         }
     )
     return 0

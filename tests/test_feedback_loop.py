@@ -2,11 +2,14 @@ import json
 import sqlite3
 import sys
 
+import joblib
 import pandas as pd
+import pytest
 
 from scripts.retrain import (
     TARGET_COLUMN,
     build_training_data,
+    calibration_indices,
     next_promoted_version,
     reference_holdout_indices,
     should_retrain,
@@ -33,9 +36,9 @@ CREATE TABLE feedbacks (
 
 
 def _training_row(source: pd.DataFrame) -> dict:
-    """First dataset row that is not part of the frozen reference holdout."""
-    holdout = set(reference_holdout_indices())
-    return source.loc[next(i for i in source.index if i not in holdout)].to_dict()
+    """First dataset row outside the fixed calibration and holdout splits."""
+    protected = set(reference_holdout_indices()) | set(calibration_indices())
+    return source.loc[next(i for i in source.index if i not in protected)].to_dict()
 
 
 def _insert_feedback(db_path, request_id: str, row: dict, label: int) -> None:
@@ -134,7 +137,12 @@ def test_feedback_training_data_keeps_cisia_three_class_labels(tmp_path, monkeyp
     _, target = build_training_data(feedbacks)
 
     assert set(target.unique()) == {0, 1, 2}
-    assert len(target) == len(source) - len(reference_holdout_indices()) + 1
+    assert len(target) == (
+        len(source)
+        - len(reference_holdout_indices())
+        - len(calibration_indices())
+        + 1
+    )
 
 
 def test_feedback_to_promotion_end_to_end(tmp_path, monkeypatch):
@@ -182,6 +190,7 @@ def test_feedback_to_promotion_end_to_end(tmp_path, monkeypatch):
     monkeypatch.setattr(retrain, "PROMOTED_PATH", tmp_path / "promoted.joblib")
     monkeypatch.setattr(retrain, "PROMOTED_METADATA_PATH", tmp_path / "promoted.json")
     monkeypatch.setattr(retrain, "DECISION_LOG", tmp_path / "decisions.jsonl")
+    monkeypatch.setenv("RETRAIN_METRICS_PATH", str(tmp_path / "retrain.prom"))
     result_path = tmp_path / "retrain-result.json"
     monkeypatch.setenv("RETRAIN_RESULT_PATH", str(result_path))
     monkeypatch.setenv("MLFLOW_TRACKING_URI", (tmp_path / "mlruns").as_uri())
@@ -189,6 +198,10 @@ def test_feedback_to_promotion_end_to_end(tmp_path, monkeypatch):
 
     assert retrain.main() == 0
     assert (tmp_path / "candidate.joblib").exists()
+    from sklearn.calibration import CalibratedClassifierCV
+
+    candidate = joblib.load(tmp_path / "candidate.joblib")
+    assert isinstance(candidate, CalibratedClassifierCV)
     result = json.loads(result_path.read_text(encoding="utf-8"))
     record = json.loads((tmp_path / "decisions.jsonl").read_text(encoding="utf-8").splitlines()[-1])
     assert result["status"] == record["decision"]["status"]
@@ -199,7 +212,14 @@ def test_feedback_to_promotion_end_to_end(tmp_path, monkeypatch):
     assert record["candidate"]["registry"]["name"] == retrain.REGISTERED_MODEL_NAME
     assert record["production"]["model_version"]
     assert len(record["data"]["reference_set_sha256"]) == 64
+    assert record["data"]["excluded_calibration_rows"] == 400
+    assert len(record["data"]["calibration_indices_sha256"]) == 64
     assert set(record["metrics"]["delta_candidate_minus_production"]) == set(record["metrics"]["candidate"])
+    assert set(result["metrics_reference"]) == {"candidate", "production"}
+    for metrics in result["metrics_reference"].values():
+        assert "abstention_rate_pmax_below_0_55" in metrics
+        assert "critical_error_2_to_0_rate" in metrics
+        assert "critical_error_2_to_0_count" in metrics
     assert {rule["status"] for rule in record["quality_gate"]["rules"]} <= {"PASS", "FAIL"}
     assert (record["quality_gate"]["status"] == "PASS") == record["decision"]["promote"]
 
@@ -214,6 +234,81 @@ def test_feedback_to_promotion_end_to_end(tmp_path, monkeypatch):
 def test_reference_holdout_is_never_used_for_training():
     features, _ = build_training_data(pd.DataFrame())
     assert features.index.intersection(reference_holdout_indices()).empty
+
+
+def test_historical_fit_calibration_and_holdout_splits_are_disjoint():
+    from scripts.retrain import load_calibration_data
+
+    training_features, _ = build_training_data(pd.DataFrame())
+    calibration_features, _ = load_calibration_data()
+    training_indices = set(map(int, training_features.index))
+    calibration_index_set = set(calibration_indices())
+    holdout_index_set = set(reference_holdout_indices())
+
+    assert len(training_indices) == 1600
+    assert len(calibration_index_set) == 400
+    assert len(holdout_index_set) == 500
+    assert len(calibration_features) == 400
+    assert not training_indices & calibration_index_set
+    assert not training_indices & holdout_index_set
+    assert not calibration_index_set & holdout_index_set
+
+
+def test_calibration_index_hash_is_verified(tmp_path, monkeypatch):
+    from scripts import retrain
+
+    manifest = json.loads(retrain.CALIBRATION_INDEX_PATH.read_text(encoding="utf-8"))
+    manifest["indices"][0] += 5000
+    tampered_path = tmp_path / "calibration_indices.json"
+    tampered_path.write_text(json.dumps(manifest), encoding="utf-8")
+    monkeypatch.setattr(retrain, "CALIBRATION_INDEX_PATH", tampered_path)
+
+    with pytest.raises(ValueError, match="hash does not match"):
+        calibration_indices()
+
+
+def test_promoted_metadata_keeps_calibrated_artifact_contract(tmp_path, monkeypatch):
+    from scripts import retrain
+
+    production_metadata_path = tmp_path / "production.json"
+    production_metadata_path.write_text(
+        retrain.PRODUCTION_METADATA_PATH.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    candidate_calibration = {
+        "method": "isotonic",
+        "estimator": "sklearn.calibration.CalibratedClassifierCV",
+        "cv": "prefit",
+        "calibration_rows": 400,
+    }
+    candidate_metadata_path = tmp_path / "candidate.json"
+    candidate_metadata_path.write_text(
+        json.dumps({
+            "configuration": {"model_parameters": retrain.XGB_PARAMS},
+            "dataset": {},
+            "training": {},
+            "calibration": candidate_calibration,
+        }),
+        encoding="utf-8",
+    )
+    promoted_metadata_path = tmp_path / "promoted.json"
+    monkeypatch.setattr(retrain, "PRODUCTION_METADATA_PATH", production_metadata_path)
+    monkeypatch.setattr(retrain, "CANDIDATE_METADATA_PATH", candidate_metadata_path)
+    monkeypatch.setattr(retrain, "PROMOTED_METADATA_PATH", promoted_metadata_path)
+    monkeypatch.setattr(retrain, "PROMOTED_PATH", tmp_path / "promoted.joblib")
+    metrics = {
+        "f1_macro": 0.7,
+        "abstention_rate_pmax_below_0_55": 0.2,
+        "critical_error_2_to_0_rate": 0.1,
+    }
+
+    retrain.write_promoted_metadata(metrics, feedback_count=3)
+
+    promoted_metadata = json.loads(promoted_metadata_path.read_text(encoding="utf-8"))
+    assert promoted_metadata["calibration"] == candidate_calibration
+    assert promoted_metadata["evaluation"]["metrics"] == metrics
+    assert promoted_metadata["artifacts"]["model_path"] == "promoted.joblib"
+    assert promoted_metadata["artifacts"]["metadata_path"] == "promoted.json"
 
 
 def test_feedback_replaying_reference_row_is_excluded(tmp_path, monkeypatch):
@@ -232,6 +327,32 @@ def test_feedback_replaying_reference_row_is_excluded(tmp_path, monkeypatch):
     _insert_feedback(db_path, "FRESH", fresh, fresh_label)
 
     usable, excluded = drop_reference_overlap(load_unconsumed_feedbacks())
+
+    assert excluded == 1
+    assert usable["request_id"].tolist() == ["FRESH"]
+
+
+def test_feedback_replaying_calibration_row_is_excluded(tmp_path, monkeypatch):
+    from scripts.retrain import (
+        drop_calibration_overlap,
+        load_unconsumed_feedbacks,
+    )
+
+    db_path = tmp_path / "feedbacks.db"
+    monkeypatch.setenv("FEEDBACK_DB", str(db_path))
+    calibration = pd.read_csv("data/dataset_trajectoire_emploi.csv").iloc[
+        calibration_indices()[0]
+    ].to_dict()
+    calibration.pop("usager_id")
+    calibration_label = int(calibration.pop(TARGET_COLUMN))
+    _insert_feedback(db_path, "CALIBRATION-REPLAY", calibration, calibration_label)
+
+    fresh = _training_row(pd.read_csv("data/dataset_trajectoire_emploi.csv"))
+    fresh.pop("usager_id")
+    fresh_label = int(fresh.pop(TARGET_COLUMN))
+    _insert_feedback(db_path, "FRESH", fresh, fresh_label)
+
+    usable, excluded = drop_calibration_overlap(load_unconsumed_feedbacks())
 
     assert excluded == 1
     assert usable["request_id"].tolist() == ["FRESH"]

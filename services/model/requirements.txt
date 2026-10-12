@@ -1,5 +1,6 @@
 # Service model — M5-B1 (Python 3.11+)
 fastapi==0.115.5
+httpx==0.27.2                 # FastAPI TestClient for pre-promotion artifact validation
 uvicorn[standard]==0.32.1
 pydantic==2.10.3
 pandas==2.2.2
