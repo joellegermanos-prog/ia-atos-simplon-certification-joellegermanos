@@ -29,11 +29,11 @@
           "p_value": 0.7279686019613467
         }
       },
-      "code_insee_commune": {
-        "psi": 7.255471494909336,
+      "departement": {
+        "psi": 0.14879836185309656,
         "chi2": {
-          "statistic": 1660.0380952380951,
-          "p_value": 0.6939062919065689
+          "statistic": 104.18137033646524,
+          "p_value": 0.22197443296964367
         }
       }
     }
@@ -73,14 +73,14 @@
           "p_value": 1.701416256809101e-23
         }
       },
-      "code_insee_commune": {
+      "departement": {
         "reference_relationship": {
-          "statistic": 2973.2015814857796,
-          "p_value": 1.3039616873787238e-26
+          "statistic": 326.4239514984684,
+          "p_value": 1.582432883587903e-09
         },
         "current_relationship": {
-          "statistic": 2964.315567671577,
-          "p_value": 3.599644982485683e-23
+          "statistic": 312.74913299069823,
+          "p_value": 1.7078224624670365e-08
         }
       }
     }
@@ -116,5 +116,5 @@
     "concept_drift_requires": "label relationship changes with current labels",
     "diagnostic_note": "Statistical signals must be crossed with business and temporal context before retraining."
   },
-  "generated_at_epoch": 1790778362.36337
+  "generated_at_epoch": 1791670224.1377902
 }

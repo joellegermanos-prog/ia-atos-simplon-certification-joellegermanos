@@ -440,8 +440,7 @@
             "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
-              { "color": "yellow", "value": 0.2 },
-              { "color": "red", "value": 0.35 }
+              { "color": "red", "value": 0.6 }
             ]
           }
         },
@@ -941,7 +940,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "cisia_drift_psi",
+          "expr": "cisia_drift_psi{feature!=\"code_insee_commune\"}",
           "legendFormat": "PSI {{feature}}",
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
@@ -971,13 +970,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "cisia_drift_ks_pvalue",
+          "expr": "cisia_drift_ks_pvalue{feature!=\"code_insee_commune\"}",
           "legendFormat": "KS p-value {{feature}}",
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         },
         {
           "refId": "B",
-          "expr": "cisia_drift_chi2_pvalue",
+          "expr": "cisia_drift_chi2_pvalue{feature!=\"code_insee_commune\"}",
           "legendFormat": "Chi² p-value {{feature}}",
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }

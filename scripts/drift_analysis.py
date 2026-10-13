@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -20,10 +21,24 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency, ks_2samp
 
+ROOT = Path(__file__).resolve().parents[1]
+SERVICE_ROOT = ROOT / "services" / "model"
+sys.path.insert(0, str(SERVICE_ROOT))
+from preprocess import extract_department
+
 TARGET = "classe_retour_emploi"
 PROBABILITY_COLUMNS = ["proba_0", "proba_1", "proba_2"]
 NUMERIC_FEATURES = ["anciennete_poste_ans"]
-CATEGORICAL_FEATURES = ["niveau_diplome", "code_rome_vise", "code_insee_commune"]
+CATEGORICAL_FEATURES = ["niveau_diplome", "code_rome_vise", "departement"]
+
+
+def _with_department(frame: pd.DataFrame) -> pd.DataFrame:
+    """Use the model's department feature, deriving it from the commune code if needed."""
+    if "departement" in frame or "code_insee_commune" not in frame:
+        return frame
+    result = frame.copy()
+    result["departement"] = result["code_insee_commune"].apply(extract_department)
+    return result
 
 
 def psi(reference: pd.Series, current: pd.Series, bins: int = 10) -> float:
@@ -103,6 +118,8 @@ def _class_relationship(frame: pd.DataFrame, feature: str) -> dict[str, float]:
 
 def analyse(reference: pd.DataFrame, current: pd.DataFrame) -> dict:
     """Return data drift, concept drift and confidence drift diagnostics."""
+    reference = _with_department(reference)
+    current = _with_department(current)
     data_drift: dict[str, dict] = {"numeric": {}, "categorical": {}}
     for feature in NUMERIC_FEATURES:
         if feature in reference and feature in current:

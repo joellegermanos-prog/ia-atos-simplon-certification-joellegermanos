@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "multimodal_complet",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-05T07:17:40.556343+00:00",
+  "created_at_utc": "2026-10-13T17:19:01.606360+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2611,8 +2611,8 @@
     }
   },
   "training": {
-    "training_seconds": 1.7667803000076674,
-    "cpu_ms_1000_predictions": 98593.75,
+    "training_seconds": 1.3076958000019658,
+    "cpu_ms_1000_predictions": 49531.25,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",

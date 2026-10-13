@@ -1,7 +1,14 @@
 import numpy as np
 import pandas as pd
 
-from scripts.drift_analysis import analyse, categorical_psi, chi2_result, ks_result, psi
+from scripts.drift_analysis import (
+    analyse,
+    categorical_psi,
+    chi2_result,
+    ks_result,
+    prometheus_metrics,
+    psi,
+)
 
 
 def test_psi_detects_numeric_distribution_shift():
@@ -41,5 +48,11 @@ def test_analyse_triangulates_inputs_labels_and_confidence():
     current["proba_2"] = 0.8
     report = analyse(reference, current)
     assert "anciennete_poste_ans" in report["data_drift"]["numeric"]
+    assert "departement" in report["data_drift"]["categorical"]
+    assert "code_insee_commune" not in report["data_drift"]["categorical"]
+    assert "departement" in report["concept_drift"]["categorical"]
+    metrics = prometheus_metrics(report)
+    assert 'feature="departement"' in metrics
+    assert 'feature="code_insee_commune"' not in metrics
     assert report["concept_drift"]["available"] is True
     assert report["confidence_drift"]["available"] is True

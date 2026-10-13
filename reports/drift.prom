@@ -12,23 +12,23 @@ cisia_drift_psi{feature="niveau_diplome"} 0.008961001964443062
 cisia_drift_chi2_pvalue{feature="niveau_diplome"} 0.08170386690688529
 cisia_drift_psi{feature="code_rome_vise"} 0.0575434936349409
 cisia_drift_chi2_pvalue{feature="code_rome_vise"} 0.7279686019613467
-cisia_drift_psi{feature="code_insee_commune"} 7.255471494909336
-cisia_drift_chi2_pvalue{feature="code_insee_commune"} 0.6939062919065689
+cisia_drift_psi{feature="departement"} 0.14879836185309656
+cisia_drift_chi2_pvalue{feature="departement"} 0.22197443296964367
 cisia_confidence_drift_psi{class="0"} 0.012485943546703128
 cisia_confidence_drift_psi{class="1"} 0.007092930616312341
 cisia_confidence_drift_psi{class="2"} 0.011417217357502148
 # HELP cisia_drift_alert 1 when a drift signal needs investigation
 # TYPE cisia_drift_alert gauge
-cisia_drift_alert 1
+cisia_drift_alert 0
 # HELP cisia_drift_alert_severity 0 none, 1 warning, 2 critical
 # TYPE cisia_drift_alert_severity gauge
-cisia_drift_alert_severity 2
+cisia_drift_alert_severity 1
 # HELP cisia_drift_report_timestamp_seconds Unix timestamp of the latest drift report
 # TYPE cisia_drift_report_timestamp_seconds gauge
-cisia_drift_report_timestamp_seconds 1790778362.36337
+cisia_drift_report_timestamp_seconds 1791670224.1377902
 # HELP cisia_drift_alert_timestamp_seconds Unix timestamp of the latest detected alert
 # TYPE cisia_drift_alert_timestamp_seconds gauge
-cisia_drift_alert_timestamp_seconds 1790778362.36337
+cisia_drift_alert_timestamp_seconds 0
 # HELP cisia_drift_alert_owner_info Owner responsible for drift investigation
 # TYPE cisia_drift_alert_owner_info gauge
 cisia_drift_alert_owner_info{owner="ML Platform"} 1

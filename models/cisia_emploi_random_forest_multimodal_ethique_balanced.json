@@ -4,7 +4,7 @@
   "model_version": "v1.0.0",
   "scenario_name": "multimodal_ethique",
   "config_name": "balanced",
-  "created_at_utc": "2026-10-05T07:16:18.365794+00:00",
+  "created_at_utc": "2026-10-13T17:17:51.121488+00:00",
   "versions": {
     "python": "3.12.10",
     "scikit_learn": "1.5.1",
@@ -2599,8 +2599,8 @@
     }
   },
   "training": {
-    "training_seconds": 0.8915434000082314,
-    "cpu_ms_1000_predictions": 92656.25,
+    "training_seconds": 0.8702001000056043,
+    "cpu_ms_1000_predictions": 62500.0,
     "inference_measurement_dataset": "train_split_only",
     "inference_samples": 100,
     "trained_on": "train_split_only",
